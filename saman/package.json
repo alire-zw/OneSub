@@ -1,0 +1,25 @@
+{
+  "name": "saman-api-collector",
+  "version": "1.0.0",
+  "description": "Script to collect API calls from Saman Bank website",
+  "main": "collect.js",
+  "scripts": {
+    "start": "node collect.js",
+    "autologin": "node autoLogin.js",
+    "server": "node server.js",
+    "test:routes": "node testRoutes.js",
+    "test:bill": "node testBillStatement.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.6.2",
+    "axios-cookiejar-support": "^4.0.7",
+    "dotenv": "^16.3.1",
+    "express": "^4.22.1",
+    "jalaali-js": "^1.2.8",
+    "puppeteer-core": "^21.6.1",
+    "tough-cookie": "^4.1.3"
+  }
+}

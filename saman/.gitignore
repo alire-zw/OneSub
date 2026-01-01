@@ -1,0 +1,4 @@
+node_modules/
+api-calls.json
+*.log
+
