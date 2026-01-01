@@ -1,0 +1,507 @@
+.pageWrapper {
+  padding-bottom: 90px; /* فاصله برای دکمه ثابت */
+  min-height: 100vh;
+}
+
+.container {
+  padding: 16px;
+}
+
+.categoryContainer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 2px;
+  font-size: 12px;
+  color: var(--foreground-secondary);
+}
+
+.categoryLabel {
+  font-weight: 500;
+}
+
+.categoryText {
+  font-weight: 500;
+  color: var(--foreground);
+}
+
+.productHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.imageContainer {
+  width: 120px;
+  height: 120px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--background-secondary);
+  border: 1px solid var(--border);
+}
+
+.productImage {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.placeholderImage {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--background-secondary);
+}
+
+.productInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.headerSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  flex: 1;
+  min-width: 0;
+  justify-content: space-between;
+  align-self: stretch;
+}
+
+.productName {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--foreground);
+  line-height: 1.4;
+  word-wrap: break-word;
+  margin-bottom: 4px;
+}
+
+.priceContainer {
+  margin-top: auto;
+  padding-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.priceLabel {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--foreground-secondary);
+}
+
+.productPrice {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.durationContainer {
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.durationLabel {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--foreground-secondary);
+}
+
+.durationText {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--foreground);
+}
+
+
+.priceSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background: var(--background-secondary);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.priceRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.priceLabel {
+  font-size: 14px;
+  color: var(--foreground-secondary);
+}
+
+.regularPrice {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.purchasePrice {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--foreground);
+}
+
+.infoRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--background-secondary);
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  min-height: 36px;
+}
+
+.infoLabelContainer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: nowrap;
+  min-width: 0;
+}
+
+.infoIcon {
+  color: var(--foreground-secondary);
+  flex-shrink: 0;
+}
+
+.infoLabel {
+  font-size: 12px;
+  color: var(--foreground-secondary);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.infoValue {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--foreground);
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fieldContainer {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.fieldWrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.fieldLabel {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--foreground-secondary);
+}
+
+.fieldItem {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  background: var(--background-secondary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  min-height: 36px;
+}
+
+.fieldItemValue {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--foreground);
+  width: 100%;
+  text-align: center;
+}
+
+.additionalInfoWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.additionalInfoLabel {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--foreground-secondary);
+}
+
+.additionalInfo {
+  padding: 8px 12px;
+  background: var(--background-secondary);
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  min-height: 36px;
+}
+
+.additionalInfoText {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--foreground);
+  line-height: 1.5;
+  white-space: pre-wrap;
+  margin: 0;
+}
+
+/* Note Box Styles */
+.noteWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.noteLabel {
+  font-size: 12px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.noteLabelIcon {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+}
+
+.noteLabelInfo {
+  color: #2563eb; /* آبی تیره‌تر برای لایت مود */
+}
+
+.noteLabelWarning {
+  color: #d97706; /* نارنجی تیره‌تر برای لایت مود */
+}
+
+.noteLabelNote {
+  color: #7c3aed; /* بنفش تیره‌تر برای لایت مود */
+}
+
+.dark .noteLabelInfo {
+  color: #60a5fa; /* آبی روشن‌تر برای دارک مود */
+}
+
+.dark .noteLabelWarning {
+  color: #fbbf24; /* نارنجی روشن‌تر برای دارک مود */
+}
+
+.dark .noteLabelNote {
+  color: #a78bfa; /* بنفش روشن‌تر برای دارک مود */
+}
+
+.noteBox {
+  padding: 8px 12px;
+  background: var(--background-secondary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+}
+
+.noteBoxInfo {
+  background: rgba(37, 99, 235, 0.08); /* آبی با opacity بیشتر */
+  border-color: rgba(37, 99, 235, 0.15);
+}
+
+.noteBoxWarning {
+  background: rgba(217, 119, 6, 0.08); /* نارنجی با opacity بیشتر */
+  border-color: rgba(217, 119, 6, 0.15);
+}
+
+.noteBoxNote {
+  background: rgba(124, 58, 237, 0.08); /* بنفش با opacity بیشتر */
+  border-color: rgba(124, 58, 237, 0.15);
+}
+
+.dark .noteBoxInfo {
+  background: rgba(96, 165, 250, 0.12); /* آبی با opacity بیشتر برای دارک مود */
+  border-color: rgba(96, 165, 250, 0.25);
+}
+
+.dark .noteBoxWarning {
+  background: rgba(251, 191, 36, 0.12); /* نارنجی با opacity بیشتر برای دارک مود */
+  border-color: rgba(251, 191, 36, 0.25);
+}
+
+.dark .noteBoxNote {
+  background: rgba(167, 139, 250, 0.12); /* بنفش با opacity بیشتر برای دارک مود */
+  border-color: rgba(167, 139, 250, 0.25);
+}
+
+.noteText {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--foreground);
+  line-height: 1.5;
+  white-space: pre-wrap;
+  margin: 0;
+}
+
+.buyButtonFixedContainer {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 700px;
+  background-color: var(--card-background);
+  border-top: 1px solid var(--border);
+  padding: 12px 16px;
+  z-index: 100;
+  backdrop-filter: blur(8px);
+}
+
+.buyButton {
+  width: 100%;
+  padding: 14px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.buyButton:hover {
+  background: var(--primary-hover);
+}
+
+.buyButton:active {
+  transform: scale(0.98);
+  background: var(--primary-hover);
+}
+
+/* در iOS Safari و Android Chrome - جلوگیری از حرکت دکمه */
+@supports (-webkit-touch-callout: none) {
+  .buyButtonFixedContainer {
+    position: fixed;
+    bottom: 0;
+  }
+}
+
+/* برای موبایل‌ها - تضمین ثابت ماندن در جای خود */
+@media (max-width: 700px) {
+  .buyButtonFixedContainer {
+    left: 0;
+    right: 0;
+    transform: none;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 430px) {
+  .container {
+    padding: 12px;
+  }
+
+  .productHeader {
+    gap: 10px;
+  }
+
+  .imageContainer {
+    width: 100px;
+    height: 100px;
+  }
+
+  .productName {
+    font-size: 14px;
+  }
+
+  .regularPrice {
+    font-size: 14px;
+  }
+
+  .buyButton {
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  .buyButtonFixedContainer {
+    padding: 10px 12px;
+  }
+
+  .pageWrapper {
+    padding-bottom: 85px;
+  }
+
+  .infoRow {
+    flex-wrap: nowrap;
+    gap: 6px;
+  }
+
+  .infoLabelContainer {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .infoLabel {
+    font-size: 12px;
+    line-height: 1.3;
+    white-space: normal;
+    flex-shrink: 1;
+  }
+
+  .fieldLabel {
+    font-size: 12px;
+  }
+
+  .infoIcon {
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
+  }
+
+  .infoValue {
+    flex-shrink: 0;
+    white-space: nowrap;
+    font-size: 13px;
+  }
+
+  .fieldItemValue {
+    font-size: 13px;
+  }
+
+  .noteLabel {
+    font-size: 12px;
+  }
+
+  .noteLabelIcon {
+    width: 12px;
+    height: 12px;
+  }
+
+  .noteBox {
+    padding: 8px 10px;
+  }
+
+  .noteText {
+    font-size: 12px;
+  }
+}
+

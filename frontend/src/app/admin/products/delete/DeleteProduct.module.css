@@ -1,0 +1,246 @@
+.container {
+  background: var(--card-background);
+  min-height: 100vh;
+  padding-bottom: 80px;
+  font-family: "OneBitIranYekan", Arial, Helvetica, sans-serif;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* مخفی کردن scrollbar */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.container::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.content {
+  padding: 0;
+}
+
+.section {
+  margin-bottom: 32px;
+}
+
+.sectionTitle {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--foreground-muted);
+  margin: 24px 0 10px 0;
+  padding: 0 var(--page-padding-x);
+  text-align: start;
+}
+
+.loadingState,
+.emptyState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 16px;
+  text-align: center;
+}
+
+.emptyText {
+  font-size: 14px;
+  color: var(--foreground-muted);
+  margin: 0;
+  font-weight: 300;
+}
+
+.productsList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 var(--page-padding-x);
+}
+
+.productItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--background-secondary);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.productItem:hover {
+  background: var(--hover);
+  border-color: var(--primary);
+}
+
+.productItem.selected {
+  background: var(--hover);
+  border-color: var(--primary);
+}
+
+.productImage {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--card-background);
+  border: 1px solid var(--border);
+}
+
+.productImageImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.productImagePlaceholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--foreground-muted);
+}
+
+.productInfo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.productName {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--foreground);
+}
+
+.productDetails {
+  font-size: 12px;
+  color: var(--foreground-muted);
+}
+
+.radioIndicator {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border: 2px solid var(--border);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.productItem.selected .radioIndicator {
+  border-color: var(--primary);
+}
+
+.radioDot {
+  width: 12px;
+  height: 12px;
+  background: var(--primary);
+  border-radius: 50%;
+}
+
+.confirmSection {
+  margin-top: 24px;
+  padding: 0 var(--page-padding-x);
+}
+
+.warningBox {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  background: var(--background-secondary);
+  border: 1px solid var(--error);
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+.warningIcon {
+  flex-shrink: 0;
+  color: var(--error);
+  width: 24px;
+  height: 24px;
+}
+
+.warningText {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.warningText strong {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.warningText p {
+  font-size: 13px;
+  color: var(--foreground-muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 12px;
+}
+
+.cancelButton,
+.deleteButton {
+  flex: 1;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.cancelButton {
+  background: var(--background-secondary);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+}
+
+.cancelButton:hover:not(:disabled) {
+  background: var(--hover);
+}
+
+.cancelButton:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.deleteButton {
+  background: var(--error);
+  color: white;
+}
+
+.deleteButton:hover:not(:disabled) {
+  background: #dc2626;
+}
+
+.deleteButton:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.cancelButton:disabled,
+.deleteButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+

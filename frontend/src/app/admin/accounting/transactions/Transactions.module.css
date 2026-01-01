@@ -1,0 +1,175 @@
+.container {
+  width: 100%;
+  min-height: 100vh;
+  background: var(--card-background);
+  padding-bottom: 80px;
+  font-family: "OneBitIranYekan", Arial, Helvetica, sans-serif;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* مخفی کردن scrollbar */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.container::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.content {
+  padding: 20px var(--page-padding-x) 0 var(--page-padding-x);
+}
+
+.section {
+  margin-bottom: 32px;
+}
+
+.sectionTitle {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--foreground-muted);
+  margin: 0 0 10px 0;
+  padding: 0;
+  text-align: start;
+}
+
+.itemsContainer {
+  background: var(--background-secondary);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  padding: 12px;
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  /* مخفی کردن scrollbar */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.itemsContainer::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* Empty State */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 16px;
+  text-align: center;
+}
+
+.emptyIcon {
+  margin-bottom: 16px;
+  opacity: 0.6;
+}
+
+.emptyText {
+  font-size: 14px;
+  color: var(--foreground-muted);
+  margin: 0;
+  font-weight: 300;
+}
+
+/* Transaction Item */
+.transactionItem {
+  background: var(--card-background);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  transition: all 0.2s ease;
+}
+
+.transactionItem:hover {
+  border-color: var(--primary);
+}
+
+.transactionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.transactionInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  flex: 1;
+}
+
+.transactionMeta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.paymentIconBox {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: var(--background-secondary);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.transactionMetaText {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.paymentTypeText {
+  font-size: 12px;
+  color: var(--foreground);
+  font-weight: 400;
+}
+
+.transactionStatus {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.transactionAmount {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--foreground);
+  white-space: nowrap;
+  margin-right: 12px;
+}
+
+.transactionDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.transactionDetailRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+}
+
+.detailLabel {
+  color: var(--foreground-muted);
+  font-weight: 400;
+}
+
+.detailValue {
+  color: var(--foreground);
+  font-weight: 500;
+  text-align: left;
+  flex: 1;
+  margin-right: 12px;
+}

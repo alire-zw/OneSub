@@ -1,0 +1,279 @@
+.container {
+  background: var(--card-background);
+  min-height: 100vh;
+  padding-bottom: 80px;
+  font-family: "OneBitIranYekan", Arial, Helvetica, sans-serif;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* مخفی کردن scrollbar */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.container::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 20px var(--page-padding-x) 0 var(--page-padding-x);
+  position: relative;
+}
+
+.profileInfo {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  margin-top: 0;
+  gap: 0;
+}
+
+.profileText {
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: start;
+  margin-inline-start: 8px;
+  gap: 6px;
+}
+
+.name {
+  font-size: 18px;
+  font-weight: 300;
+  color: var(--foreground);
+  margin: 0;
+  text-align: start;
+}
+
+.roleBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.roleIcon {
+  width: 16px;
+  height: 16px;
+}
+
+.userId {
+  font-size: 12px;
+  color: var(--foreground-muted);
+  margin: 0;
+  margin-top: 5px;
+  text-align: start;
+  font-weight: 300;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.copyIcon {
+  font-size: 12px;
+  cursor: pointer;
+  margin-inline-start: 4px;
+  vertical-align: baseline;
+  position: relative;
+  top: -1px;
+  color: var(--foreground-muted);
+  transition: color 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.copyIcon:hover {
+  color: var(--foreground);
+}
+
+.copyIcon:active {
+  color: var(--primary);
+}
+
+.avatar {
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1.5px solid var(--border);
+  width: 56px;
+  height: 56px;
+  box-shadow: none;
+}
+
+.flexSpacer {
+  flex: 1;
+}
+
+/* Menu Title */
+.menuTitle {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--foreground-muted);
+  margin: 16px 0 10px 0;
+  padding: 0 var(--page-padding-x);
+  text-align: start;
+}
+
+.menuBox {
+  background: var(--background-secondary);
+  border-radius: 12px;
+  margin: 0 var(--page-padding-x) 0 var(--page-padding-x);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.menuList {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px var(--page-padding-x);
+  min-height: 46px;
+  font-size: 14px;
+  color: var(--foreground);
+  cursor: pointer;
+  transition: background 0.2s;
+  background: transparent;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.menuItem:last-child {
+  border-bottom: none;
+}
+
+.menuItem:hover {
+  background: transparent;
+}
+
+.menuItemStart {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.menuItemEnd {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.menuIcon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menuText {
+  font-size: 14px;
+  color: inherit;
+}
+
+.menuDivider {
+  height: 1px;
+  background: var(--border);
+  margin: 0 var(--page-padding-x);
+}
+
+/* Logout Section */
+.logoutSection {
+  margin: 24px 0;
+  padding: 0;
+}
+
+.logoutSection .menuItem {
+  color: #E74C3C;
+}
+
+.logoutSection .menuItem:hover {
+  background: transparent;
+  color: #E74C3C;
+}
+
+.logoutSection .menuIcon svg {
+  color: #E74C3C;
+}
+
+/* Skeleton Loader Styles */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--background-secondary) 0%,
+    var(--hover) 50%,
+    var(--background-secondary) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+  border-radius: 4px;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.skeletonAvatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+}
+
+.skeletonName {
+  height: 18px;
+  width: 120px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.skeletonUserId {
+  height: 12px;
+  width: 140px;
+  border-radius: 4px;
+}
+
+.skeletonIcon {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+}
+
+.skeletonText {
+  height: 14px;
+  width: 100px;
+  border-radius: 4px;
+}
+
+.skeletonArrow {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+}
+

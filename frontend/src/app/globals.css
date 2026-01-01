@@ -1,0 +1,445 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "OneBitIranYekan";
+  src: url("/fonts/OneBitIranYekan.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Light Mode Color Palette */
+:root {
+  /* Background Colors */
+  --background: #ffffff;
+  --background-secondary: #f8f9fa;
+  --card-background: #ffffff;
+  
+  /* Text Colors */
+  --foreground: #1a1a1a;
+  --foreground-secondary: #4a5568;
+  --foreground-muted: #718096;
+  
+  /* Primary Colors (Green) */
+  --primary: #10b981;
+  --primary-hover: #059669;
+  --primary-light: #d1fae5;
+  --primary-dark: #047857;
+  
+  /* Accent Colors */
+  --accent: #3b82f6;
+  --accent-hover: #2563eb;
+  
+  /* Status Colors */
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #3b82f6;
+  
+  /* Border & Divider */
+  --border: #e5e7eb;
+  --border-light: #f3f4f6;
+  --divider: #e5e7eb;
+  
+  /* Interactive States */
+  --hover: #f3f4f6;
+  --active: #e5e7eb;
+  --selected: #10b981;
+  --disabled: #d1d5db;
+  
+  /* Shadow */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  
+  /* Page Layout Spacing */
+  --page-padding-x: 12px;
+  --page-padding-y: 16px;
+  --card-margin-x: 12px;
+  --card-margin-y: 16px;
+  
+  /* Button Colors */
+  --button-primary: var(--primary);
+  --button-primary-text: #ffffff;
+  --button-hover: var(--primary-hover);
+  --button-active: var(--primary-dark);
+  
+  /* Security Background */
+  --security-bg: var(--primary-light);
+  
+  /* Role Colors - Light Mode */
+  --role-admin-color: #ffffff; /* سفید */
+  --role-admin-bg: #1f2937; /* پس‌زمینه خاکستری تیره */
+  --role-merchant-color: #ffffff; /* سفید */
+  --role-merchant-bg: #6366f1; /* پس‌زمینه بنفش */
+  --role-user-color: #ffffff; /* سفید */
+  --role-user-bg: var(--primary); /* پس‌زمینه سبز */
+}
+
+/* Dark Mode Color Palette */
+.dark {
+  /* Background Colors */
+  --background: #0a0a0f;
+  --background-secondary: #15151a;
+  --card-background: #1a1a1f;
+  
+  /* Text Colors */
+  --foreground: #f1f5f9;
+  --foreground-secondary: #cbd5e1;
+  --foreground-muted: #94a3b8;
+  
+  /* Primary Colors (Green) */
+  --primary: #22d67a;
+  --primary-hover: #34d399;
+  --primary-light: #065f46;
+  --primary-dark: #047857;
+  
+  /* Accent Colors */
+  --accent: #60a5fa;
+  --accent-hover: #3b82f6;
+  
+  /* Status Colors */
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #60a5fa;
+  
+  /* Border & Divider */
+  --border: #25252a;
+  --border-light: #2a2a2f;
+  --divider: #25252a;
+  
+  /* Interactive States */
+  --hover: #1f1f24;
+  --active: #25252a;
+  --selected: #10b981;
+  --disabled: #2a2a2f;
+  
+  /* Shadow */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+  
+  /* Page Layout Spacing */
+  --page-padding-x: 12px;
+  --page-padding-y: 16px;
+  --card-margin-x: 12px;
+  --card-margin-y: 16px;
+  
+  /* Button Colors */
+  --button-primary: var(--primary);
+  --button-primary-text: #ffffff;
+  --button-hover: var(--primary-hover);
+  --button-active: var(--primary-dark);
+  
+  /* Security Background */
+  --security-bg: var(--primary-light);
+  
+  /* Role Colors - Dark Mode */
+  --role-admin-color: #ffffff; /* سفید */
+  --role-admin-bg: #4b5563; /* پس‌زمینه خاکستری تیره */
+  --role-merchant-color: #ffffff; /* سفید */
+  --role-merchant-bg: #7c3aed; /* پس‌زمینه بنفش تیره */
+  --role-user-color: #ffffff; /* سفید */
+  --role-user-bg: var(--primary); /* پس‌زمینه سبز */
+}
+
+@theme inline {
+  /* Background Colors */
+  --color-background: var(--background);
+  --color-background-secondary: var(--background-secondary);
+  --color-card: var(--card-background);
+  
+  /* Text Colors */
+  --color-foreground: var(--foreground);
+  --color-foreground-secondary: var(--foreground-secondary);
+  --color-foreground-muted: var(--foreground-muted);
+  
+  /* Primary Colors */
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-light: var(--primary-light);
+  --color-primary-dark: var(--primary-dark);
+  
+  /* Accent Colors */
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  
+  /* Status Colors */
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+  --color-info: var(--info);
+  
+  /* Border Colors */
+  --color-border: var(--border);
+  --color-border-light: var(--border-light);
+  --color-divider: var(--divider);
+  
+  /* Interactive States */
+  --color-hover: var(--hover);
+  --color-active: var(--active);
+  --color-selected: var(--selected);
+  --color-disabled: var(--disabled);
+  
+  /* Font */
+  --font-onebit: "OneBitIranYekan", Arial, Helvetica, sans-serif;
+  
+  /* Page Layout Spacing */
+  --page-padding-x: 12px;
+  --page-padding-y: 16px;
+  --card-margin-x: 12px;
+  --card-margin-y: 16px;
+  
+  /* Button Colors */
+  --button-primary: var(--primary);
+  --button-primary-text: #ffffff;
+  --button-hover: var(--primary-hover);
+  --button-active: var(--primary-dark);
+}
+
+html {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  /* مخفی کردن scrollbar */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  /* جلوگیری کامل از زوم */
+  touch-action: pan-x pan-y;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  /* فعال کردن bounce effect اما جلوگیری از بسته شدن مینی اپ */
+  overscroll-behavior-x: none;
+  overscroll-behavior-y: auto;
+  }
+
+html::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: "OneBitIranYekan", Arial, Helvetica, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  /* مخفی کردن scrollbar */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  /* جلوگیری کامل از زوم */
+  touch-action: pan-x pan-y;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  user-select: none;
+  /* فعال کردن bounce effect اما جلوگیری از بسته شدن مینی اپ */
+  overscroll-behavior-x: none;
+  overscroll-behavior-y: auto;
+  /* جلوگیری از pull-to-refresh */
+  overscroll-behavior-block: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* جلوگیری از زوم خودکار iOS Safari با تنظیم font-size حداقل 16px */
+input,
+textarea,
+select {
+  font-size: 16px !important;
+}
+
+@media screen and (min-width: 768px) {
+  input,
+  textarea,
+  select {
+    font-size: 14px !important;
+  }
+}
+
+body::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* Mobile Layout Container - برای دسکتاپ */
+@media (min-width: 701px) {
+  /* فضای خالی سمت چپ و راست (body) */
+  body {
+    background: var(--card-background) !important;
+  }
+  
+  /* Container اصلی */
+  body > div[data-nextjs-scroll-focus-boundary] {
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+    background: var(--background) !important;
+    min-height: 100vh;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.15);
+    position: relative;
+    /* فعال کردن bounce effect */
+    overscroll-behavior-y: auto;
+    overscroll-behavior-x: none;
+  }
+  
+  /* در dark mode هم همینطور */
+  .dark body {
+    background: var(--card-background) !important;
+  }
+  
+  .dark body > div[data-nextjs-scroll-focus-boundary] {
+    background: var(--background) !important;
+  }
+}
+
+/* Mobile-first responsive */
+@media (max-width: 700px) {
+  body {
+    background: var(--card-background) !important;
+  }
+  
+  body > div[data-nextjs-scroll-focus-boundary] {
+    width: 100%;
+    max-width: 100%;
+    box-shadow: none;
+    background: var(--background) !important;
+    /* فعال کردن bounce effect */
+    overscroll-behavior-y: auto;
+    overscroll-behavior-x: none;
+  }
+  
+  /* در dark mode هم همینطور */
+  .dark body {
+    background: var(--card-background) !important;
+  }
+  
+  .dark body > div[data-nextjs-scroll-focus-boundary] {
+    background: var(--background) !important;
+  }
+}
+
+/* استایل‌های خاص برای مینی‌اپ تلگرام */
+body.telegram-webapp {
+  background: var(--background);
+  /* فعال کردن bounce effect برای swipe */
+  overscroll-behavior-y: auto;
+  overscroll-behavior-x: none;
+}
+
+body.telegram-webapp > div[data-nextjs-scroll-focus-boundary] {
+  box-shadow: none;
+  /* فعال کردن bounce effect */
+  overscroll-behavior-y: auto;
+  overscroll-behavior-x: none;
+}
+
+/* اعمال overscroll-behavior به container اصلی */
+body > div[data-nextjs-scroll-focus-boundary] {
+  overscroll-behavior-y: auto;
+  overscroll-behavior-x: none;
+  width: 100%;
+  height: 100%;
+}
+
+/* Main container - بدون scroll داخلی */
+body > div[data-nextjs-scroll-focus-boundary] > main {
+  overscroll-behavior-y: auto;
+  overscroll-behavior-x: none;
+  /* بدون overflow - scroll در سطح body است */
+  overflow: visible;
+  width: 100%;
+}
+
+/* اعمال overscroll-behavior به همه صفحات */
+body > div[data-nextjs-scroll-focus-boundary] > main > * {
+  overscroll-behavior-y: auto;
+  overscroll-behavior-x: none;
+}
+
+/* جلوگیری از زوم در تمام المان‌ها */
+* {
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  touch-action: manipulation;
+}
+
+/* اما اجازه انتخاب متن در input و textarea */
+input,
+textarea,
+select,
+[contenteditable="true"] {
+  -webkit-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: default;
+  /* جلوگیری کامل از زوم */
+  touch-action: manipulation;
+  font-size: 16px !important;
+}
+
+/* Mobile Navbar - جلوگیری از حرکت navbar هنگام باز شدن کیبورد */
+.mobile-navbar {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 700px;
+  background-color: var(--card-background);
+  border-top: 1px solid var(--border);
+  z-index: 50;
+  backdrop-filter: blur(8px);
+}
+
+/* در iOS Safari و Android Chrome - جلوگیری از حرکت navbar */
+@supports (-webkit-touch-callout: none) {
+  .mobile-navbar {
+    position: fixed;
+    bottom: 0;
+  }
+}
+
+/* برای موبایل‌ها - تضمین ثابت ماندن در جای خود */
+@media (max-width: 700px) {
+  .mobile-navbar {
+    left: 0;
+    right: 0;
+    transform: none;
+    max-width: 100%;
+  }
+}
+
+/* Page Layout Utility Classes */
+.page-padding-x {
+  padding-left: var(--page-padding-x);
+  padding-right: var(--page-padding-x);
+}
+
+.page-padding-y {
+  padding-top: var(--page-padding-y);
+  padding-bottom: var(--page-padding-y);
+}
+
+.page-padding {
+  padding: var(--page-padding-y) var(--page-padding-x);
+}
+
+/* Hide scrollbar utility */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}

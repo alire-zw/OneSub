@@ -1,0 +1,65 @@
+/* Header */
+.header {
+  background: color-mix(in srgb, var(--card-background) 80%, transparent 20%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: 0;
+  direction: inherit;
+}
+
+/* Fallback برای مرورگرهایی که color-mix رو پشتیبانی نمی‌کنن */
+@supports not (background: color-mix(in srgb, var(--card-background) 80%, transparent 20%)) {
+  .header {
+    background: rgba(255, 255, 255, 0.8);
+  }
+  
+  .dark .header {
+    background: rgba(26, 26, 31, 0.8);
+  }
+}
+
+.headerContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px var(--page-padding-x);
+  max-width: 100%;
+}
+
+.backButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--background-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--foreground);
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.backButton:active {
+  transform: scale(0.95);
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--foreground);
+  margin: 0;
+  text-align: center;
+  flex: 1;
+}
+
+.headerOptions {
+  width: 32px;
+}
+

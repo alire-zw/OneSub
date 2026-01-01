@@ -1,0 +1,7 @@
+/* استفاده از استایل‌های wallet برای یکسان سازی */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+

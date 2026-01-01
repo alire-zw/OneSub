@@ -1,0 +1,224 @@
+.container {
+  background: var(--card-background);
+  min-height: 100vh;
+  padding-bottom: 80px;
+  font-family: "OneBitIranYekan", Arial, Helvetica, sans-serif;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.container::-webkit-scrollbar {
+  display: none;
+}
+
+.content {
+  padding: 20px var(--page-padding-x);
+}
+
+.formContainer {
+  padding: 20px;
+  text-align: center;
+  color: var(--foreground-muted);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--foreground);
+  text-align: start;
+}
+
+.input,
+.select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--background-secondary);
+  color: var(--foreground);
+  font-size: 16px;
+  font-family: inherit;
+  transition: all 0.2s;
+  box-sizing: border-box;
+}
+
+.input:focus,
+.select:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.select {
+  cursor: pointer;
+}
+
+.input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.input[type="number"]::-webkit-outer-spin-button,
+.input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.imageUpload {
+  width: 100%;
+}
+
+.fileInput {
+  display: none;
+}
+
+.fileLabel {
+  display: block;
+  width: 100%;
+  cursor: pointer;
+  border: 2px dashed var(--border);
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  transition: all 0.2s;
+  background: var(--background-secondary);
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.fileLabel:hover {
+  border-color: var(--primary);
+  background: var(--hover);
+}
+
+.fileLabel.uploaded {
+  border-color: var(--primary);
+  border-style: dashed;
+  border-width: 1px;
+  background: var(--background-secondary);
+  cursor: pointer;
+}
+
+.fileLabel.uploaded:hover {
+  background: var(--hover);
+}
+
+.uploadPlaceholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--foreground-muted);
+}
+
+.uploadPlaceholder svg {
+  width: 32px;
+  height: 32px;
+}
+
+.uploadPlaceholder span {
+  font-size: 14px;
+}
+
+.uploadSuccess {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--primary);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.uploadSuccess svg {
+  flex-shrink: 0;
+}
+
+.uploading {
+  opacity: 0.7;
+  cursor: wait !important;
+}
+
+.previewImage {
+  width: 100%;
+  max-height: 200px;
+  object-fit: contain;
+  border-radius: 8px;
+  margin-top: 8px;
+  border: 1px solid var(--border);
+}
+
+.formActions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.cancelButton,
+.submitButton {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  box-sizing: border-box;
+}
+
+.cancelButton {
+  background: var(--background-secondary);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+}
+
+.cancelButton:hover:not(:disabled) {
+  background: var(--hover);
+}
+
+.cancelButton:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.submitButton {
+  background: var(--primary);
+  color: white;
+}
+
+.submitButton:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+
+.submitButton:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.cancelButton:disabled,
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+

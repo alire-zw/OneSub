@@ -1,0 +1,213 @@
+.container {
+  background: var(--card-background);
+  min-height: 100vh;
+  padding-bottom: 80px;
+  font-family: "OneBitIranYekan", Arial, Helvetica, sans-serif;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* مخفی کردن scrollbar */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.container::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.content {
+  padding: 20px var(--page-padding-x);
+}
+
+.formContainer {
+  padding: 20px;
+  text-align: center;
+  color: var(--foreground-muted);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--foreground);
+  text-align: start;
+}
+
+.input,
+.textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card-background);
+  color: var(--foreground);
+  font-size: 14px;
+  font-family: inherit;
+  transition: all 0.2s;
+  box-sizing: border-box;
+  height: 36px;
+}
+
+.input:focus,
+.textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: var(--foreground-muted);
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 80px;
+  height: auto;
+}
+
+/* حذف spinner از input های عددی */
+.input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.input[type="number"]::-webkit-outer-spin-button,
+.input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Form Actions */
+.formActions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.cancelButton,
+.submitButton {
+  flex: 1;
+  padding: 0;
+  height: 36px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  margin: 0;
+  line-height: 1;
+}
+
+.cancelButton {
+  background: var(--background-secondary);
+  color: var(--foreground);
+  border-color: var(--border);
+}
+
+.cancelButton:hover:not(:disabled) {
+  background: var(--hover);
+}
+
+.cancelButton:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.submitButton {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.submitButton:hover:not(:disabled) {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+
+.submitButton:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.cancelButton:disabled,
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Status Box */
+.statusBox {
+  background: var(--background-secondary);
+  border-radius: 12px;
+  padding: 32px 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.statusIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.statusTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--foreground);
+  margin: 0;
+  text-align: center;
+}
+
+.statusText {
+  font-size: 14px;
+  color: var(--foreground-muted);
+  margin: 0;
+  text-align: center;
+  line-height: 1.6;
+}
+
+.rejectionReason {
+  background: var(--card-background);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  margin: 16px 0;
+  text-align: start;
+  width: 100%;
+}
+
+.rejectionReason strong {
+  display: block;
+  font-size: 13px;
+  color: var(--foreground);
+  margin-bottom: 8px;
+}
+
+.rejectionReason p {
+  font-size: 14px;
+  color: var(--foreground-muted);
+  margin: 0;
+  line-height: 1.6;
+}

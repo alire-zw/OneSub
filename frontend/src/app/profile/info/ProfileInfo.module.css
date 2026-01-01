@@ -1,0 +1,242 @@
+.container {
+  background: var(--card-background);
+  min-height: 100vh;
+  padding-bottom: 80px;
+  font-family: "OneBitIranYekan", Arial, Helvetica, sans-serif;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* مخفی کردن scrollbar */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.container::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* Content */
+.content {
+  padding: 0;
+}
+
+.section {
+  margin-bottom: 32px;
+}
+
+.sectionTitle {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--foreground-muted);
+  margin: 24px 0 10px 0;
+  padding: 0 var(--page-padding-x);
+  text-align: start;
+}
+
+.itemsContainer {
+  background: var(--background-secondary);
+  border-radius: 12px;
+  margin: 0 var(--page-padding-x) 0 var(--page-padding-x);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.listItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px var(--page-padding-x);
+  min-height: 46px;
+  font-size: 14px;
+  color: var(--foreground);
+  cursor: pointer;
+  transition: background 0.2s;
+  background: transparent;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.listItem:last-child {
+  border-bottom: none;
+}
+
+.listItem:hover {
+  background: transparent;
+}
+
+.listItemStart {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.listItemEnd {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.editIcon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.itemContent {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.itemText {
+  font-size: 14px;
+  color: var(--foreground);
+  margin: 0;
+  text-align: start;
+  font-weight: 400;
+}
+
+.itemValue {
+  font-size: 13px;
+  color: var(--foreground-muted);
+  margin: 0;
+  text-align: start;
+  min-height: 16px;
+}
+
+.editButton {
+  background: var(--card-background);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 12px;
+  color: var(--foreground);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.editButton:hover {
+  background: var(--hover);
+}
+
+.editButton:active {
+  transform: scale(0.98);
+}
+
+.menuDivider {
+  height: 1px;
+  background: var(--border);
+  margin: 0 var(--page-padding-x);
+}
+
+/* Modal Styles */
+.modalContent {
+  padding: 0;
+}
+
+.inputWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.modalInput {
+  width: 100%;
+  height: 40px;
+  padding-left: 40px;
+  padding-right: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card-background);
+  color: var(--foreground);
+  font-size: 14px;
+  transition: all 0.2s;
+  box-sizing: border-box;
+  direction: ltr;
+  text-align: left;
+  font-family: inherit;
+}
+
+.inputIcon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.modalInput:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.modalInput::placeholder {
+  color: var(--foreground-muted);
+}
+
+/* Skeleton Loader Styles */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--background-secondary) 0%,
+    var(--hover) 50%,
+    var(--background-secondary) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+  border-radius: 4px;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.skeletonIcon {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+}
+
+.skeletonText {
+  height: 14px;
+  border-radius: 4px;
+}
+
+.skeletonTextSmall {
+  height: 12px;
+  border-radius: 4px;
+}
+
+.skeletonButton {
+  width: 60px;
+  height: 28px;
+  border-radius: 6px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .listItem {
+    padding: 14px var(--page-padding-x);
+  }
+}
+

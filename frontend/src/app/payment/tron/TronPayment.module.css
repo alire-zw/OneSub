@@ -1,0 +1,756 @@
+/* Tron Payment Page Styles */
+.paymentPage {
+  min-height: 100vh;
+  background: var(--card-background);
+  color: var(--foreground);
+  font-family: var(--font-onebit), Arial, Helvetica, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  padding: var(--page-padding-y) var(--page-padding-x);
+  padding-top: calc(var(--page-padding-y) + 16px);
+  box-sizing: border-box;
+  margin: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.paymentCard {
+  background: var(--background-secondary);
+  border: none;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 0;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 auto;
+  max-width: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  position: sticky;
+  top: calc(var(--page-padding-y) + 16px);
+}
+
+.iconContainer {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+}
+
+.iconContainerSuccess {
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.iconContainerError {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.titleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.cardTitle {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--foreground);
+  margin: 0;
+  text-align: right;
+  flex: 1;
+}
+
+.cardTitleCenter {
+  text-align: center;
+  flex: none;
+}
+
+.cardDescription {
+  font-size: 14px;
+  color: var(--foreground-secondary);
+  margin: 0 0 16px 0;
+  text-align: center;
+}
+
+.supportMessage {
+  font-size: 13px;
+  color: var(--foreground-muted);
+  margin: 0 0 24px 0;
+  text-align: center;
+  line-height: 1.6;
+  padding: 12px;
+  background: var(--primary-light);
+  border-radius: 8px;
+  border: 1px solid var(--primary);
+}
+
+.trackIdBox {
+  background: var(--background-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 0 0 24px 0;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.trackIdRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.trackIdRow:last-child {
+  margin-bottom: 0;
+}
+
+.trackIdLabel {
+  font-size: 12px;
+  color: var(--foreground-muted);
+  white-space: nowrap;
+}
+
+.trackIdValue {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--foreground);
+  font-family: var(--font-onebit), Arial, Helvetica, sans-serif;
+  direction: ltr;
+  text-align: left;
+}
+
+.trackIdValueRtl {
+  direction: rtl;
+  text-align: right;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+/* Timer */
+.timerContainer {
+  background: var(--background-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  margin: 0 0 24px 0;
+  text-align: center;
+}
+
+.timerInline {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  min-width: 120px;
+}
+
+.timerLabel {
+  font-size: 12px;
+  color: var(--foreground-muted);
+  margin: 0;
+}
+
+.timer {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--primary);
+  font-family: 'Courier New', 'Consolas', 'Monaco', monospace;
+  direction: ltr;
+}
+
+.timerWarning {
+  color: var(--error);
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Amount Box */
+.amountBox {
+  background: var(--background-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  margin: 0 0 16px 0;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.amountRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.amountLabel {
+  font-size: 13px;
+  color: var(--foreground-muted);
+  white-space: nowrap;
+}
+
+.amountValue {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--foreground);
+  font-family: var(--font-onebit), Arial, Helvetica, sans-serif;
+  direction: ltr;
+  text-align: left;
+}
+
+/* QR Code and Address Row */
+.qrAddressRow {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  margin: 0 0 24px 0;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+/* QR Code */
+.qrContainer {
+  background: white;
+  padding: 12px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+  width: 150px;
+  min-width: 150px;
+  height: 150px;
+  order: 2;
+}
+
+/* Address Row */
+.addressRow {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  align-items: stretch;
+}
+
+/* Address Box */
+.addressBox {
+  background: var(--background-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  text-align: right;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 150px;
+  justify-content: space-between;
+}
+
+/* Empty Box */
+.emptyBox {
+  background: var(--background-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  width: 150px;
+  min-width: 150px;
+  height: 150px;
+  max-height: 150px;
+  flex-shrink: 0;
+  align-self: flex-start;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+.emptyBox > * {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.emptyBox svg {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+.addressLabel {
+  font-size: 12px;
+  color: var(--foreground-muted);
+  margin-bottom: 8px;
+}
+
+.addressValueContainer {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  flex: 1;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.addressValue {
+  flex: 1;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--foreground);
+  font-family: 'Courier New', 'Consolas', 'Monaco', monospace;
+  direction: ltr;
+  text-align: left;
+  word-break: break-all;
+  background: var(--card-background);
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  min-width: 0;
+}
+
+.copyButton {
+  padding: 8px 16px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  width: 100%;
+  margin-top: auto;
+}
+
+.copyButton:hover {
+  background: var(--primary-hover);
+}
+
+/* Instructions */
+.instructionsBox {
+  background: var(--primary-light);
+  border: 1px solid var(--primary);
+  border-radius: 8px;
+  padding: 12px;
+  margin: 0 0 16px 0;
+  text-align: right;
+}
+
+.instructionsText {
+  font-size: 12px;
+  color: var(--foreground);
+  margin: 0 0 8px 0;
+  line-height: 1.6;
+}
+
+.instructionsText:last-child {
+  margin-bottom: 0;
+}
+
+/* Info Box */
+.infoBox {
+  background: var(--background-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 0 0 24px 0;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.infoLabel {
+  font-size: 12px;
+  color: var(--foreground-muted);
+  white-space: nowrap;
+}
+
+.infoValue {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--foreground);
+  font-family: var(--font-onebit), Arial, Helvetica, sans-serif;
+  direction: ltr;
+  text-align: left;
+}
+
+/* Buttons */
+.walletButton {
+  width: 100%;
+  height: 40px;
+  padding: 0 16px;
+  background: var(--primary);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: var(--font-onebit), Arial, Helvetica, sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.walletButton:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.walletButton:active {
+  background: var(--primary-dark);
+  transform: translateY(0);
+}
+
+.walletButtonSecondary {
+  background: var(--card-background);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+}
+
+.walletButtonSecondary:hover {
+  background: var(--hover);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.walletButtonSecondary:active {
+  transform: translateY(0);
+}
+
+/* Skeleton Loading */
+.skeletonContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.skeletonTitleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 0;
+}
+
+.skeletonTitle {
+  flex: 1;
+  height: 28px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--border) 25%, var(--border-light) 50%, var(--border) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+}
+
+.skeletonTimer {
+  width: 120px;
+  height: 60px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, var(--border) 25%, var(--border-light) 50%, var(--border) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+}
+
+.skeletonInstructionsBox {
+  background: var(--primary-light);
+  border: 1px solid var(--primary);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skeletonInstructionsLine {
+  width: 100%;
+  height: 16px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, rgba(16, 185, 129, 0.2) 25%, rgba(16, 185, 129, 0.1) 50%, rgba(16, 185, 129, 0.2) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+}
+
+.skeletonInstructionsLine:first-child {
+  width: 85%;
+}
+
+.skeletonAddressRow {
+  display: flex;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.skeletonQrBox {
+  width: 150px;
+  min-width: 150px;
+  height: 150px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, var(--border) 25%, var(--border-light) 50%, var(--border) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.skeletonAddressBox {
+  flex: 1;
+  background: var(--background-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 150px;
+  justify-content: space-between;
+}
+
+.skeletonAddressLabel {
+  width: 100px;
+  height: 14px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--border) 25%, var(--border-light) 50%, var(--border) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+}
+
+.skeletonAddressValue {
+  flex: 1;
+  min-height: 80px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--border) 25%, var(--border-light) 50%, var(--border) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+}
+
+.skeletonCopyButton {
+  width: 100%;
+  height: 32px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--border) 25%, var(--border-light) 50%, var(--border) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+}
+
+.skeletonAmountBox {
+  background: var(--background-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.skeletonAmountRow {
+  width: 100%;
+  height: 18px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--border) 25%, var(--border-light) 50%, var(--border) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+}
+
+.skeletonButton {
+  width: 100%;
+  height: 40px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, var(--border) 25%, var(--border-light) 50%, var(--border) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 480px) {
+  .paymentPage {
+    padding: 16px 12px;
+    padding-top: calc(16px + 16px);
+  }
+
+  .paymentCard {
+    padding: 16px 12px;
+    top: calc(16px + 16px);
+  }
+  
+  .cardTitle {
+    font-size: 18px;
+    margin-bottom: 0;
+  }
+  
+  .cardDescription {
+    font-size: 13px;
+    margin-bottom: 16px;
+  }
+  
+  .timer {
+    font-size: 16px;
+  }
+  
+  .timerInline {
+    min-width: 90px;
+    gap: 2px;
+  }
+
+  .timerLabel {
+    font-size: 10px;
+  }
+  
+  .titleRow {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  
+  .qrAddressRow {
+    flex-direction: row;
+    gap: 12px;
+    align-items: flex-start;
+    margin-bottom: 16px;
+    flex-wrap: nowrap;
+  }
+  
+  .qrContainer {
+    width: 140px;
+    min-width: 140px;
+    height: 140px;
+    padding: 8px;
+    flex-shrink: 0;
+  }
+  
+  .addressRow {
+    flex-direction: row;
+    gap: 12px;
+  }
+
+  .addressBox {
+    flex: 1;
+    min-width: 0;
+    min-height: 150px;
+    padding: 10px;
+  }
+
+  .emptyBox {
+    width: 150px;
+    min-width: 150px;
+    height: 150px;
+    flex-shrink: 0;
+  }
+
+  .addressLabel {
+    font-size: 11px;
+    margin-bottom: 6px;
+  }
+
+  .addressValue {
+    font-size: 11px;
+    padding: 6px;
+    line-height: 1.4;
+  }
+  
+  .addressValueContainer {
+    margin-bottom: 8px;
+    min-height: 50px;
+    align-items: flex-start;
+  }
+  
+  .copyButton {
+    padding: 6px 12px;
+    font-size: 11px;
+    width: 100%;
+    margin-top: auto;
+  }
+
+  .amountBox {
+    padding: 12px;
+    margin-bottom: 16px;
+    gap: 10px;
+  }
+
+  .amountLabel {
+    font-size: 12px;
+  }
+
+  .amountValue {
+    font-size: 13px;
+  }
+
+  .instructionsBox {
+    padding: 10px;
+    margin-bottom: 16px;
+  }
+
+  .instructionsText {
+    font-size: 11px;
+    margin-bottom: 6px;
+  }
+
+  .infoBox {
+    padding: 10px 12px;
+    margin-bottom: 16px;
+    gap: 6px;
+  }
+
+  .infoLabel {
+    font-size: 11px;
+  }
+
+  .infoValue {
+    font-size: 12px;
+  }
+
+  .walletButton {
+    height: 38px;
+    font-size: 13px;
+  }
+}
+

@@ -1,0 +1,772 @@
+/* Wallet Page Styles */
+.walletPage {
+  height: 100vh;
+  background: var(--card-background);
+  color: var(--foreground);
+  font-family: var(--font-onebit), Arial, Helvetica, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  padding: var(--page-padding-y) var(--page-padding-x);
+  padding-top: calc(var(--page-padding-y) + 16px);
+  box-sizing: border-box;
+  margin: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Modal Description Style (from CenterModal) */
+.modalDescription {
+  margin: 0 0 8px 0;
+  padding-inline: 0.6em 0;
+  padding-block: 0;
+  background: transparent;
+  border-inline-start: 4px solid rgba(100, 100, 100, 0.2);
+  font-size: 14px;
+  color: var(--foreground-muted);
+  font-weight: 200;
+  opacity: 0.85;
+  line-height: 1.6;
+}
+
+/* Note Styles (from product buy page) */
+.noteWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.noteLabel {
+  font-size: 12px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.noteLabelIcon {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+}
+
+.noteLabelInfo {
+  color: #2563eb; /* آبی تیره‌تر برای لایت مود */
+}
+
+.noteLabelWarning {
+  color: #d97706; /* نارنجی تیره‌تر برای لایت مود */
+}
+
+.noteLabelNote {
+  color: #7c3aed; /* بنفش تیره‌تر برای لایت مود */
+}
+
+.dark .noteLabelInfo {
+  color: #60a5fa; /* آبی روشن‌تر برای دارک مود */
+}
+
+.dark .noteLabelWarning {
+  color: #fbbf24; /* نارنجی روشن‌تر برای دارک مود */
+}
+
+.dark .noteLabelNote {
+  color: #a78bfa; /* بنفش روشن‌تر برای دارک مود */
+}
+
+.noteBox {
+  padding: 8px 12px;
+  background: var(--background-secondary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+}
+
+.noteBoxInfo {
+  background: rgba(37, 99, 235, 0.08); /* آبی با opacity */
+  border-color: rgba(37, 99, 235, 0.15);
+}
+
+.noteBoxWarning {
+  background: rgba(217, 119, 6, 0.08); /* نارنجی با opacity */
+  border-color: rgba(217, 119, 6, 0.15);
+}
+
+.noteBoxNote {
+  background: rgba(124, 58, 237, 0.08); /* بنفش با opacity */
+  border-color: rgba(124, 58, 237, 0.15);
+}
+
+.dark .noteBoxInfo {
+  background: rgba(96, 165, 250, 0.12); /* آبی با opacity بیشتر برای دارک مود */
+  border-color: rgba(96, 165, 250, 0.25);
+}
+
+.dark .noteBoxWarning {
+  background: rgba(251, 191, 36, 0.12); /* نارنجی با opacity بیشتر برای دارک مود */
+  border-color: rgba(251, 191, 36, 0.25);
+}
+
+.dark .noteBoxNote {
+  background: rgba(167, 139, 250, 0.12); /* بنفش با opacity بیشتر برای دارک مود */
+  border-color: rgba(167, 139, 250, 0.25);
+}
+
+.noteText {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--foreground);
+  line-height: 1.5;
+  white-space: pre-wrap;
+  margin: 0;
+  text-align: right;
+  direction: rtl;
+}
+
+.walletCard {
+  background: var(--background-secondary);
+  border: none;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 0;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 auto;
+  max-width: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  position: sticky;
+  top: calc(var(--page-padding-y) + 16px);
+}
+
+.iconContainer {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+}
+
+.iconContainerSuccess {
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.iconContainerError {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.cardTitle {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--foreground);
+  margin: 0 0 8px 0;
+  text-align: center;
+}
+
+.cardDescription {
+  font-size: 14px;
+  color: var(--foreground-secondary);
+  margin: 0 0 16px 0;
+  text-align: center;
+}
+
+.supportMessage {
+  font-size: 13px;
+  color: var(--foreground-muted);
+  margin: 0 0 24px 0;
+  text-align: center;
+  line-height: 1.6;
+  padding: 12px;
+  background: var(--primary-light);
+  border-radius: 8px;
+  border: 1px solid var(--primary);
+}
+
+.trackIdBox {
+  background: var(--background-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 0 0 24px 0;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.trackIdRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.trackIdRow:last-child {
+  margin-bottom: 0;
+}
+
+.trackIdLabel {
+  font-size: 12px;
+  color: var(--foreground-muted);
+  white-space: nowrap;
+}
+
+.trackIdValue {
+  font-size: 13px;
+  font-weight: 300;
+  color: var(--foreground);
+  font-family: var(--font-onebit), Arial, Helvetica, sans-serif;
+  direction: rtl;
+  text-align: right;
+}
+
+.trackIdValueRtl {
+  direction: rtl;
+  text-align: right;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.walletButton {
+  flex: 1;
+  height: 40px;
+  padding: 0 16px;
+  background: var(--primary);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: var(--font-onebit), Arial, Helvetica, sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.walletButton:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.walletButton:active {
+  background: var(--primary-dark);
+  transform: translateY(0);
+}
+
+.walletButtonSecondary {
+  background: var(--card-background);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+}
+
+.walletButtonSecondary:hover {
+  background: var(--hover);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.walletButtonSecondary:active {
+  transform: translateY(0);
+}
+
+/* Skeleton Loading */
+.skeletonContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.skeletonIcon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, var(--border) 25%, var(--border-light) 50%, var(--border) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+  margin: 0 auto;
+}
+
+.skeletonTitle {
+  width: 60%;
+  height: 28px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--border) 25%, var(--border-light) 50%, var(--border) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+  margin: 0 auto;
+}
+
+.skeletonDescription {
+  width: 80%;
+  height: 20px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--border) 25%, var(--border-light) 50%, var(--border) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+  margin: 0 auto;
+}
+
+.skeletonBox {
+  width: 100%;
+  height: 48px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, var(--border) 25%, var(--border-light) 50%, var(--border) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+}
+
+.skeletonButton {
+  width: 100%;
+  height: 40px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, var(--border) 25%, var(--border-light) 50%, var(--border) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Main Wallet Page Styles */
+.container {
+  width: 100%;
+  min-height: 100vh;
+  background: var(--card-background);
+  padding-bottom: 80px;
+  font-family: "OneBitIranYekan", Arial, Helvetica, sans-serif;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* مخفی کردن scrollbar */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.container::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.content {
+  padding: 20px var(--page-padding-x) 0 var(--page-padding-x);
+}
+
+/* Balance Section */
+.balanceSection {
+  margin-bottom: 32px;
+}
+
+.balanceCard {
+  background: var(--background-secondary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+}
+
+.balanceInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  width: 100%;
+}
+
+.balanceLabel {
+  font-size: 12px;
+  color: var(--foreground-muted);
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.balanceLabelIcon {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+}
+
+.balanceAmount {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--foreground);
+  direction: rtl;
+  text-align: right;
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.balanceUnit {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--foreground-muted);
+}
+
+.balanceSkeleton {
+  width: 120px;
+  height: 28px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--border) 25%, var(--border-light) 50%, var(--border) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+}
+
+.chargeButton {
+  width: 100%;
+  height: 44px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: "OneBitIranYekan", Arial, Helvetica, sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.chargeButton:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.chargeButton:active {
+  background: var(--primary-dark);
+  transform: translateY(0);
+}
+
+.chargeButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Charge Section */
+.chargeSection {
+  margin-bottom: 32px;
+}
+
+.chargeSectionTitle {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--foreground-muted);
+  margin: 0 0 10px 0;
+  padding: 0;
+  text-align: start;
+}
+
+/* Field Styles */
+.fieldWrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  margin-bottom: 6px;
+}
+
+.fieldLabel {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--foreground-secondary);
+}
+
+.fieldItem {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 6px 12px;
+  background: var(--background-secondary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  min-height: 36px;
+  cursor: pointer;
+  position: relative;
+}
+
+.fieldItem > label:first-of-type {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+
+.fieldItemValue {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--foreground);
+  width: 100%;
+  text-align: center;
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 0;
+}
+
+.fieldItemValue::placeholder {
+  color: var(--foreground-muted);
+}
+
+.fieldItemValue:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Payment Methods */
+.paymentMethods {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+.paymentMethodRadio {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.paymentMethodLabel {
+  flex: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin: 0;
+  width: 100%;
+  direction: rtl;
+}
+
+.menuIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: var(--foreground);
+}
+
+.paymentMethodItemSelected {
+  border: 2px solid var(--primary) !important;
+}
+
+/* برای آیتم‌های روش پرداخت، متن راست‌چین */
+.paymentMethodLabel .fieldItemValue {
+  text-align: right;
+  direction: rtl;
+  flex: 1;
+}
+
+/* Section Styles */
+.section {
+  margin-bottom: 32px;
+}
+
+.sectionTitle {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--foreground-muted);
+  margin: 0 0 10px 0;
+  padding: 0;
+  text-align: start;
+}
+
+.itemsContainer {
+  background: var(--background-secondary);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  padding: 12px;
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  /* مخفی کردن scrollbar */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.itemsContainer::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* Empty State */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 16px;
+  text-align: center;
+}
+
+.emptyIcon {
+  margin-bottom: 16px;
+  opacity: 0.6;
+}
+
+.emptyText {
+  font-size: 14px;
+  color: var(--foreground-muted);
+  margin: 0;
+  font-weight: 300;
+}
+
+/* Transaction Item */
+.transactionItem {
+  background: var(--card-background);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  transition: all 0.2s ease;
+}
+
+.transactionItem:hover {
+  border-color: var(--primary);
+}
+
+.transactionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.transactionInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  flex: 1;
+}
+
+.transactionMeta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.paymentIconBox {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: var(--background-secondary);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.transactionMetaText {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.paymentTypeText {
+  font-size: 12px;
+  color: var(--foreground);
+  font-weight: 400;
+}
+
+.transactionStatus {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.transactionAmount {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--foreground);
+  white-space: nowrap;
+  margin-right: 12px;
+}
+
+.transactionDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.transactionDetailRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+}
+
+.detailLabel {
+  color: var(--foreground-muted);
+  font-weight: 400;
+}
+
+.detailValue {
+  color: var(--foreground);
+  font-weight: 500;
+  text-align: left;
+  flex: 1;
+  margin-right: 12px;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 480px) {
+  .walletCard {
+    padding: 20px 16px;
+  }
+  
+  .cardTitle {
+    font-size: 20px;
+  }
+  
+  .cardDescription {
+    font-size: 12px;
+  }
+
+  .balanceCard {
+    padding: 16px;
+  }
+
+  .balanceAmount {
+    font-size: 20px;
+  }
+}
+

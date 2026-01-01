@@ -1,0 +1,1562 @@
+.pageWrapper {
+  padding-bottom: 20px;
+  min-height: 100vh;
+  background: var(--background);
+}
+
+.container {
+  padding: 16px;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+/* Wrapper برای باکس محصول و پیشرفت */
+.productWrapper {
+  position: relative;
+  margin-bottom: 90px; /* فاصله برای باکس پیشرفت */
+}
+
+/* باکس محصول مشابه صفحه فروشگاه */
+.productBox {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+  padding-bottom: 10px;
+  align-items: flex-end;
+  min-height: 74px;
+}
+
+.productImageContainer {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.productImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.productImagePlaceholder {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  background: var(--background-secondary);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--foreground-muted);
+}
+
+.productContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.productHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.productNameRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+.productName {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--foreground);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.productSeparator {
+  font-size: 12px;
+  color: var(--foreground-muted);
+  flex-shrink: 0;
+}
+
+.productDuration {
+  font-size: 12px;
+  color: var(--foreground-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.productDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.productInfoRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  color: var(--foreground-muted);
+}
+
+.infoSeparator {
+  color: var(--foreground-muted);
+}
+
+/* خلاصه قیمت */
+.priceSummary {
+  background: var(--background-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.summaryRow:last-child {
+  margin-bottom: 0;
+}
+
+.summaryLabel {
+  font-size: 13px;
+  color: var(--foreground-secondary);
+}
+
+.summaryValue {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.summaryValue.insufficientBalance {
+  color: var(--error);
+}
+
+.summaryValue.totalPrice {
+  font-size: 18px;
+  color: var(--primary);
+}
+
+.summaryDivider {
+  height: 1px;
+  background: var(--border);
+  margin: 12px 0;
+}
+
+.insufficientBalanceWarning {
+  margin-top: 12px;
+  padding: 12px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 6px;
+}
+
+.insufficientBalanceWarning p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--error);
+}
+
+.shortageAmount {
+  margin-top: 4px !important;
+  font-weight: 600;
+}
+
+/* پیام خطا */
+.errorBox {
+  padding: 12px 16px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 6px;
+  margin-bottom: 16px;
+}
+
+.errorBox p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--error);
+}
+
+.errorMessage {
+  text-align: center;
+  padding: 32px 16px;
+}
+
+.errorMessage p {
+  font-size: 14px;
+  color: var(--foreground-secondary);
+  margin-bottom: 16px;
+}
+
+.backButton {
+  padding: 10px 20px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.backButton:hover {
+  background: var(--primary-hover);
+}
+
+/* دکمه‌های ثابت در پایین */
+.buttonFixedContainer {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 700px;
+  background-color: var(--card-background);
+  border-top: 1px solid var(--border);
+  padding: 12px 16px;
+  z-index: 100;
+  backdrop-filter: blur(8px);
+}
+
+.buttonRow {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.backButton {
+  flex: 1;
+  padding: 14px;
+  background: var(--background-secondary);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.backButton:hover {
+  background: var(--background);
+  border-color: var(--primary);
+}
+
+.backButton:active {
+  transform: scale(0.98);
+  background: var(--background);
+}
+
+.nextButton {
+  flex: 1;
+  padding: 14px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.nextButton:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+
+.nextButton:active:not(:disabled) {
+  transform: scale(0.98);
+  background: var(--primary-hover);
+}
+
+.nextButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* در iOS Safari و Android Chrome - جلوگیری از حرکت دکمه */
+@supports (-webkit-touch-callout: none) {
+  .buttonFixedContainer {
+    position: fixed;
+    bottom: 0;
+  }
+}
+
+/* برای موبایل‌ها - تضمین ثابت ماندن در جای خود */
+@media (max-width: 700px) {
+  .buttonFixedContainer {
+    left: 0;
+    right: 0;
+    transform: none;
+    max-width: 100%;
+  }
+}
+
+.purchaseButtonContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.purchaseButton {
+  width: 100%;
+  padding: 14px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.purchaseButton:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+
+.purchaseButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.purchaseButtonDisabled {
+  background: var(--foreground-muted);
+}
+
+.chargeButton {
+  width: 100%;
+  padding: 14px;
+  background: transparent;
+  color: var(--primary);
+  border: 2px solid var(--primary);
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.chargeButton:hover {
+  background: var(--primary);
+  color: white;
+}
+
+/* Skeleton Loading */
+.productBoxSkeleton {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+  padding-bottom: 10px;
+  align-items: flex-end;
+  margin-bottom: 16px;
+}
+
+.productImageSkeleton {
+  width: 56px;
+  height: 56px;
+  background: var(--background);
+  border-radius: 4px;
+  flex-shrink: 0;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.productContentSkeleton {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skeletonLine {
+  height: 12px;
+  background: var(--background);
+  border-radius: 4px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.priceSummary .skeletonLine {
+  height: 20px;
+}
+
+.nextButtonSkeleton {
+  width: 100%;
+  height: 48px;
+  background: var(--background);
+  border-radius: 8px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.purchaseButtonSkeleton {
+  width: 100%;
+  height: 48px;
+  background: var(--background);
+  border-radius: 8px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* موبایل */
+@media (max-width: 430px) {
+  .container {
+    padding: 12px;
+  }
+
+  .productBox {
+    padding: 8px;
+    padding-bottom: 10px;
+  }
+
+  .productImageContainer,
+  .productImagePlaceholder {
+    width: 56px;
+    height: 56px;
+  }
+
+  .priceSummary {
+    padding: 12px;
+  }
+
+  .summaryLabel {
+    font-size: 12px;
+  }
+
+  .summaryValue {
+    font-size: 13px;
+  }
+
+  .summaryValue.totalPrice {
+    font-size: 16px;
+  }
+}
+
+/* نوار پیشرفت مراحل - ثابت زیر باکس محصول */
+.progressContainer {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px 8px;
+  padding-bottom: 10px;
+  height: 74px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  position: absolute;
+  bottom: -82px;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 10;
+}
+
+.progressHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.progressTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--foreground);
+}
+
+.progressIcon {
+  width: 20px;
+  height: 20px;
+  color: var(--foreground-secondary);
+}
+
+.progressBar {
+  margin-bottom: 0;
+}
+
+.progressSegments {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.progressSegment {
+  flex: 1;
+  height: 8px;
+  background: var(--background-secondary);
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.progressSegmentCompleted {
+  background: var(--success);
+}
+
+.progressSegmentActive {
+  background: var(--primary);
+}
+
+.progressSteps {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.progressStep {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  opacity: 0.5;
+  transition: opacity 0.3s ease;
+}
+
+.progressStepActive {
+  opacity: 1;
+}
+
+.progressStepCompleted {
+  opacity: 1;
+}
+
+.stepIcon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--background-secondary);
+  color: var(--foreground-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.progressStepActive .stepIcon {
+  background: var(--primary);
+  color: white;
+}
+
+.progressStepCompleted .stepIcon {
+  background: var(--success);
+  color: white;
+}
+
+.progressStep span {
+  font-size: 10px;
+  color: var(--foreground-secondary);
+  text-align: center;
+}
+
+.progressStepActive span {
+  color: var(--foreground);
+  font-weight: 500;
+}
+
+.progressStepCompleted span {
+  color: var(--foreground);
+}
+
+/* فرم اطلاعات کاربر */
+.userInfoForm {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* فرم توضیحات سفارش */
+.orderForm {
+  margin-top: 90px; /* فاصله برای باکس پیشرفت ثابت */
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* انتخاب روش پرداخت */
+.paymentMethods {
+  margin-top: 90px; /* فاصله برای باکس پیشرفت ثابت */
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+.paymentMethodRadio {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.paymentMethodLabel {
+  flex: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin: 0;
+  width: 100%;
+  direction: rtl;
+}
+
+.menuIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: var(--foreground);
+}
+
+.paymentMethodItemSelected {
+  border: 2px solid var(--primary) !important;
+}
+
+
+.fieldWrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.fieldLabel {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--foreground-secondary);
+}
+
+.fieldItem {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 6px 12px;
+  background: var(--background-secondary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  min-height: 36px;
+  cursor: pointer;
+  position: relative;
+}
+
+.fieldItem > label:first-of-type {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+
+.fieldItemValue {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--foreground);
+  width: 100%;
+  text-align: center;
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 0;
+}
+
+/* برای آیتم‌های روش پرداخت، متن راست‌چین */
+.paymentMethodLabel .fieldItemValue {
+  text-align: right;
+  direction: rtl;
+  flex: 1;
+}
+
+.paymentMethodInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--foreground-secondary);
+  margin-right: auto;
+  direction: rtl;
+}
+
+.paymentMethodInfo span {
+  white-space: nowrap;
+}
+
+.sufficientBalance {
+  color: var(--success);
+  font-weight: 500;
+}
+
+.insufficientBalance {
+  color: var(--error);
+  font-weight: 500;
+}
+
+.walletCheckboxContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 6px 8px;
+  background: rgba(var(--primary-rgb, 37, 99, 235), 0.05);
+  border: 1px solid rgba(var(--primary-rgb, 37, 99, 235), 0.2);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  direction: rtl;
+}
+
+.dark .walletCheckboxContainer {
+  background: rgba(96, 165, 250, 0.1);
+  border-color: rgba(96, 165, 250, 0.3);
+}
+
+.walletCheckboxContainer:hover {
+  background: rgba(var(--primary-rgb, 37, 99, 235), 0.1);
+}
+
+.dark .walletCheckboxContainer:hover {
+  background: rgba(96, 165, 250, 0.15);
+}
+
+.walletCheckbox {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--primary);
+  flex-shrink: 0;
+}
+
+.walletCheckboxLabel {
+  font-size: 11px;
+  color: var(--foreground);
+  cursor: pointer;
+  user-select: none;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.fieldItemValue::placeholder {
+  color: var(--foreground-muted);
+}
+
+.fieldItemValue:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Note Box Styles - مشابه صفحه اطلاعات محصول */
+.noteWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.noteLabel {
+  font-size: 12px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.noteLabelIcon {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+}
+
+.noteLabelInfo {
+  color: #2563eb; /* آبی تیره‌تر برای لایت مود */
+}
+
+.noteLabelWarning {
+  color: #d97706; /* نارنجی تیره‌تر برای لایت مود */
+}
+
+.noteLabelNote {
+  color: #7c3aed; /* بنفش تیره‌تر برای لایت مود */
+}
+
+.dark .noteLabelInfo {
+  color: #60a5fa; /* آبی روشن‌تر برای دارک مود */
+}
+
+.dark .noteLabelWarning {
+  color: #fbbf24; /* نارنجی روشن‌تر برای دارک مود */
+}
+
+.dark .noteLabelNote {
+  color: #a78bfa; /* بنفش روشن‌تر برای دارک مود */
+}
+
+.noteBox {
+  padding: 8px 12px;
+  background: var(--background-secondary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+}
+
+.noteBoxInfo {
+  background: rgba(37, 99, 235, 0.08); /* آبی با opacity */
+  border-color: rgba(37, 99, 235, 0.15);
+}
+
+.noteBoxWarning {
+  background: rgba(217, 119, 6, 0.08); /* نارنجی با opacity */
+  border-color: rgba(217, 119, 6, 0.15);
+}
+
+.noteBoxNote {
+  background: rgba(124, 58, 237, 0.08); /* بنفش با opacity */
+  border-color: rgba(124, 58, 237, 0.15);
+}
+
+.dark .noteBoxInfo {
+  background: rgba(96, 165, 250, 0.12); /* آبی با opacity بیشتر برای دارک مود */
+  border-color: rgba(96, 165, 250, 0.25);
+}
+
+.dark .noteBoxWarning {
+  background: rgba(251, 191, 36, 0.12); /* نارنجی با opacity بیشتر برای دارک مود */
+  border-color: rgba(251, 191, 36, 0.25);
+}
+
+.dark .noteBoxNote {
+  background: rgba(167, 139, 250, 0.12); /* بنفش با opacity بیشتر برای دارک مود */
+  border-color: rgba(167, 139, 250, 0.25);
+}
+
+.noteText {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--foreground);
+  line-height: 1.5;
+  white-space: pre-wrap;
+  margin: 0;
+}
+
+/* Crypto payment note specific styles */
+.cryptoNoteWrapper {
+  margin-bottom: 16px;
+}
+
+.cryptoNoteText {
+  text-align: right;
+  direction: rtl;
+}
+
+.mobileFieldContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mobileFieldContainer .fieldItem {
+  flex: 1;
+}
+
+.verificationContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.verifyButton {
+  padding: 6px 12px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.verifyButton:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+
+.verifyButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.mobileActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+}
+
+.changeNumberButton {
+  background: transparent;
+  border: none;
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0;
+  transition: opacity 0.2s;
+}
+
+.changeNumberButton:hover {
+  opacity: 0.8;
+}
+
+.resendButton {
+  background: transparent;
+  border: none;
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0;
+  transition: opacity 0.2s;
+}
+
+.resendButton:hover:not(:disabled) {
+  opacity: 0.8;
+}
+
+.resendButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.resendTimer {
+  color: var(--foreground-muted);
+  font-size: 12px;
+}
+
+/* pageWrapper */
+.pageWrapper {
+  padding-bottom: 20px;
+}
+
+/* موبایل */
+@media (max-width: 430px) {
+  .fieldLabel {
+    font-size: 12px;
+  }
+
+  .fieldItemValue {
+    font-size: 13px;
+  }
+
+  .verifyButton {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+
+  .mobileActions {
+    font-size: 11px;
+  }
+
+  .buttonFixedContainer {
+    padding: 10px 12px;
+  }
+
+  .backButton,
+  .nextButton {
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  .pageWrapper {
+    padding-bottom: 85px;
+  }
+
+  .progressContainer {
+    padding: 10px;
+  }
+
+  .progressTitle {
+    font-size: 13px;
+  }
+
+  .progressStep span {
+    font-size: 9px;
+  }
+
+  .stepIcon {
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
+  }
+}
+
+/* Crypto Payment Styles */
+.cryptoPaymentCard {
+  background: var(--background-secondary);
+  border: none;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 0;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 auto;
+  max-width: 100%;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.cryptoIconContainer {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+}
+
+.cryptoIconContainerSuccess {
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.cryptoIconContainerError {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.cryptoTitleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.cryptoCardTitle {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--foreground);
+  margin: 0;
+  text-align: right;
+  flex: 1;
+}
+
+.cryptoCardDescription {
+  font-size: 14px;
+  color: var(--foreground-secondary);
+  margin: 0 0 16px 0;
+  text-align: center;
+}
+
+.cryptoSupportMessage {
+  font-size: 13px;
+  color: var(--foreground-muted);
+  margin: 0 0 24px 0;
+  text-align: center;
+  line-height: 1.6;
+  padding: 12px;
+  background: var(--primary-light);
+  border-radius: 8px;
+  border: 1px solid var(--primary);
+}
+
+.cryptoTrackIdBox {
+  background: var(--background-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 0 0 24px 0;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cryptoTrackIdRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.cryptoTrackIdRow:last-child {
+  margin-bottom: 0;
+}
+
+.cryptoTrackIdLabel {
+  font-size: 12px;
+  color: var(--foreground-muted);
+  white-space: nowrap;
+}
+
+.cryptoTrackIdValue {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--foreground);
+  font-family: var(--font-onebit), Arial, Helvetica, sans-serif;
+  direction: ltr;
+  text-align: left;
+}
+
+.cryptoButtonGroup {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.cryptoTimerInline {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  min-width: 120px;
+}
+
+.cryptoTimerLabel {
+  font-size: 12px;
+  color: var(--foreground-muted);
+  margin: 0;
+}
+
+.cryptoTimer {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--primary);
+  font-family: 'Courier New', 'Consolas', 'Monaco', monospace;
+  direction: ltr;
+}
+
+.cryptoTimerWarning {
+  color: var(--error);
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.cryptoInstructionsBox {
+  background: var(--primary-light);
+  border: 1px solid var(--primary);
+  border-radius: 8px;
+  padding: 12px;
+  margin: 0 0 16px 0;
+  text-align: right;
+}
+
+.cryptoInstructionsText {
+  font-size: 12px;
+  color: var(--foreground);
+  margin: 0 0 8px 0;
+  line-height: 1.6;
+}
+
+.cryptoInstructionsText:last-child {
+  margin-bottom: 0;
+}
+
+.cryptoAddressRow {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  align-items: stretch;
+}
+
+.cryptoEmptyBox {
+  background: var(--background-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  width: 150px;
+  min-width: 150px;
+  height: 150px;
+  max-height: 150px;
+  flex-shrink: 0;
+  align-self: flex-start;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+.cryptoEmptyBox > * {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.cryptoEmptyBox svg {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+.cryptoAddressBox {
+  background: var(--background-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  text-align: right;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 150px;
+  justify-content: space-between;
+}
+
+.cryptoAddressLabel {
+  font-size: 12px;
+  color: var(--foreground-muted);
+  margin-bottom: 8px;
+}
+
+.cryptoAddressValueContainer {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  flex: 1;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.cryptoAddressValue {
+  flex: 1;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--foreground);
+  font-family: 'Courier New', 'Consolas', 'Monaco', monospace;
+  direction: ltr;
+  text-align: left;
+  word-break: break-all;
+  background: var(--card-background);
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  min-width: 0;
+}
+
+.cryptoCopyButton {
+  padding: 8px 16px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  width: 100%;
+  margin-top: auto;
+}
+
+.cryptoCopyButton:hover {
+  background: var(--primary-hover);
+}
+
+.cryptoAmountBox {
+  background: var(--background-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  margin: 0 0 16px 0;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cryptoAmountRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.cryptoAmountLabel {
+  font-size: 13px;
+  color: var(--foreground-muted);
+  white-space: nowrap;
+}
+
+.cryptoAmountValue {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--foreground);
+  font-family: var(--font-onebit), Arial, Helvetica, sans-serif;
+  direction: ltr;
+  text-align: left;
+}
+
+.cryptoInfoBox {
+  background: var(--background-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 0 0 24px 0;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cryptoInfoRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.cryptoInfoLabel {
+  font-size: 12px;
+  color: var(--foreground-muted);
+  white-space: nowrap;
+}
+
+.cryptoInfoValue {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--foreground);
+  font-family: var(--font-onebit), Arial, Helvetica, sans-serif;
+  direction: ltr;
+  text-align: left;
+}
+
+.cryptoWalletButton {
+  width: 100%;
+  height: 40px;
+  padding: 0 16px;
+  background: var(--primary);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: var(--font-onebit), Arial, Helvetica, sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.cryptoWalletButton:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.cryptoWalletButton:active {
+  background: var(--primary-dark);
+  transform: translateY(0);
+}
+
+.cryptoWalletButtonSecondary {
+  background: var(--card-background);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+}
+
+.cryptoWalletButtonSecondary:hover {
+  background: var(--hover);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.cryptoWalletButtonSecondary:active {
+  transform: translateY(0);
+}
+
+/* Mobile responsiveness for crypto payment */
+@media (max-width: 480px) {
+  .cryptoPaymentCard {
+    padding: 16px 12px;
+  }
+  
+  .cryptoCardTitle {
+    font-size: 18px;
+    margin-bottom: 0;
+  }
+  
+  .cryptoCardDescription {
+    font-size: 13px;
+    margin-bottom: 16px;
+  }
+  
+  .cryptoTimer {
+    font-size: 16px;
+  }
+  
+  .cryptoTimerInline {
+    min-width: 90px;
+    gap: 2px;
+  }
+
+  .cryptoTimerLabel {
+    font-size: 10px;
+  }
+  
+  .cryptoTitleRow {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  
+  .cryptoAddressRow {
+    flex-direction: row;
+    gap: 12px;
+  }
+
+  .cryptoAddressBox {
+    flex: 1;
+    min-width: 0;
+    min-height: 150px;
+    padding: 10px;
+  }
+
+  .cryptoEmptyBox {
+    width: 150px;
+    min-width: 150px;
+    height: 150px;
+    flex-shrink: 0;
+  }
+
+  .cryptoAddressLabel {
+    font-size: 11px;
+    margin-bottom: 6px;
+  }
+
+  .cryptoAddressValue {
+    font-size: 11px;
+    padding: 6px;
+    line-height: 1.4;
+  }
+  
+  .cryptoAddressValueContainer {
+    margin-bottom: 8px;
+    min-height: 50px;
+    align-items: flex-start;
+  }
+  
+  .cryptoCopyButton {
+    padding: 6px 12px;
+    font-size: 11px;
+    width: 100%;
+    margin-top: auto;
+  }
+
+  .cryptoAmountBox {
+    padding: 12px;
+    margin-bottom: 16px;
+    gap: 10px;
+  }
+
+  .cryptoAmountLabel {
+    font-size: 12px;
+  }
+
+  .cryptoAmountValue {
+    font-size: 13px;
+  }
+
+  .cryptoInstructionsBox {
+    padding: 10px;
+    margin-bottom: 16px;
+  }
+
+  .cryptoInstructionsText {
+    font-size: 11px;
+    margin-bottom: 6px;
+  }
+
+  .cryptoInfoBox {
+    padding: 10px 12px;
+    margin-bottom: 16px;
+    gap: 6px;
+  }
+
+  .cryptoInfoLabel {
+    font-size: 11px;
+  }
+
+  .cryptoInfoValue {
+    font-size: 12px;
+  }
+
+  .cryptoWalletButton {
+    height: 38px;
+    font-size: 13px;
+  }
+}
+
+/* Crypto payment note specific styles */
+.cryptoNoteWrapper {
+  margin-bottom: 16px;
+}
+
+.cryptoNoteText {
+  text-align: right;
+  direction: rtl;
+}
+

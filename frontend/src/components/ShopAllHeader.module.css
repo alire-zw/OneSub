@@ -1,0 +1,316 @@
+.header {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background-color: var(--card-background);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.topBar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+}
+
+.topBarRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: auto;
+}
+
+.filterButtonWrapper {
+  position: relative;
+}
+
+.walletButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background-color: var(--card-background);
+  color: var(--foreground-muted);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.walletButton:hover {
+  background-color: var(--hover);
+  color: var(--foreground);
+  border-color: var(--primary);
+}
+
+.walletButtonEmpty {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  color: white;
+}
+
+.walletButtonEmpty:hover {
+  background-color: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+
+.backButton {
+  background-color: var(--card-background);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  color: var(--foreground-muted);
+  cursor: pointer;
+}
+
+.backButton:hover {
+  background-color: var(--hover);
+  color: var(--foreground);
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--foreground);
+  margin: 0;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.title:hover {
+  color: var(--primary);
+}
+
+.searchContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.searchInput {
+  flex: 1;
+  background-color: var(--card-background);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0 12px;
+  font-size: 14px;
+  color: var(--foreground);
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.searchInput:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 20%, transparent);
+}
+
+.searchInput::placeholder {
+  color: var(--foreground-muted);
+}
+
+.searchButton {
+  background-color: var(--primary);
+  border: 1px solid var(--primary);
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+}
+
+.searchButton:hover {
+  background-color: var(--primary-hover);
+}
+
+/* Filter Container */
+.filterContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 4px;
+  margin-bottom: -4px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  cursor: grab;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.filterContainer:active {
+  cursor: grabbing;
+}
+
+.filterContainer::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.filterContainer::-webkit-scrollbar-track {
+  display: none;
+}
+
+.filterContainer::-webkit-scrollbar-thumb {
+  display: none;
+}
+
+.filterButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--foreground-muted);
+  background-color: var(--card-background);
+  border: 1px solid var(--border);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  height: 32px;
+  min-height: 32px;
+  max-height: 32px;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.filterButton:hover {
+  background-color: var(--hover);
+  border-color: var(--primary);
+}
+
+.filterButton:active {
+  transform: scale(0.98);
+}
+
+.filterButtonSelected {
+  background-color: var(--primary);
+  color: white;
+  border-color: var(--primary);
+  font-weight: 500;
+}
+
+.filterButtonSelected:hover {
+  background-color: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+
+/* Override برای زمانی که gradient استفاده می‌شود */
+.filterButtonSelected[style*="background"]:hover {
+  opacity: 0.9;
+}
+
+.filterToggleButton {
+  background-color: var(--card-background);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 12px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 32px;
+  color: var(--foreground-muted);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.filterToggleButton:hover {
+  background-color: var(--hover);
+  color: var(--foreground);
+}
+
+.filterToggleButtonActive {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  color: white;
+}
+
+.filterMenu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  background-color: var(--card-background);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  min-width: 160px;
+  z-index: 100;
+  overflow: hidden;
+}
+
+.filterMenuItem {
+  display: block;
+  width: 100%;
+  padding: 10px 16px;
+  text-align: right;
+  font-size: 14px;
+  color: var(--foreground);
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-bottom: 1px solid var(--border);
+}
+
+.filterMenuItem:last-child {
+  border-bottom: none;
+}
+
+.filterMenuItem:hover {
+  background-color: var(--hover);
+}
+
+.filterMenuItemActive {
+  background-color: var(--primary-light);
+  color: var(--primary);
+  font-weight: 500;
+}
+
+.filterMenuItemActive:hover {
+  background-color: var(--primary-light);
+}
+
+/* Responsive */
+@media (max-width: 430px) {
+  .header {
+    padding: 12px;
+  }
+
+  .filterButton {
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+}
+

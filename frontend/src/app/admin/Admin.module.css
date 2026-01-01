@@ -1,0 +1,304 @@
+.container {
+  background: var(--card-background);
+  min-height: 100vh;
+  padding-bottom: 80px;
+  font-family: "OneBitIranYekan", Arial, Helvetica, sans-serif;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* مخفی کردن scrollbar */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.container::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 20px var(--page-padding-x) 0 var(--page-padding-x);
+  position: relative;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--foreground);
+  margin: 0;
+  text-align: start;
+}
+
+.subtitle {
+  font-size: 12px;
+  color: var(--foreground-muted);
+  margin: 4px 0 0 0;
+  text-align: start;
+  font-weight: 300;
+}
+
+.statsWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 20px var(--page-padding-x) 0 var(--page-padding-x);
+}
+
+.statsRow {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+}
+
+.statBox {
+  background: var(--background-secondary);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid var(--border);
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.statBoxFull {
+  flex: 1;
+  width: 100%;
+}
+
+.statBoxFull .statContent {
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.statBoxHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: relative;
+}
+
+.statContent {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+  position: relative;
+}
+
+.statLabel {
+  font-size: 11px;
+  color: var(--foreground-muted);
+  font-weight: 300;
+  text-align: right;
+  line-height: 1.4;
+  position: relative;
+  padding-right: 22px;
+}
+
+.statIcon {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 0;
+}
+
+.statValue {
+  font-size: 20px;
+  font-weight: 600;
+  text-align: left;
+  direction: ltr;
+}
+
+/* رنگ‌های مختلف برای هر نوع سفارش */
+.statBox.pending .statValue {
+  color: #ef4444; /* قرمز */
+}
+
+.statBox.pending .statIcon {
+  color: #ef4444;
+}
+
+.statBox.processing .statValue {
+  color: #f59e0b; /* نارنجی */
+}
+
+.statBox.processing .statIcon {
+  color: #f59e0b;
+}
+
+.statBox.completed .statValue {
+  color: var(--primary); /* سبز */
+}
+
+.statBox.completed .statIcon {
+  color: var(--primary);
+}
+
+.menuBox {
+  background: var(--background-secondary);
+  border-radius: 12px;
+  margin: 24px var(--page-padding-x) 0 var(--page-padding-x);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.menuTitle {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--foreground-muted);
+  margin: 16px 0 10px 0;
+  padding: 0 var(--page-padding-x);
+  text-align: start;
+}
+
+.menuList {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px var(--page-padding-x);
+  min-height: 46px;
+  font-size: 14px;
+  color: var(--foreground);
+  cursor: pointer;
+  transition: background 0.2s;
+  background: transparent;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.menuItem:last-child {
+  border-bottom: none;
+}
+
+.menuItemStart {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.menuItemEnd {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* تنظیم جهت فلش‌های آیتم‌های منو */
+[dir='ltr'] .menuItemEnd svg {
+  transform: scaleX(-1);
+}
+
+.menuIcon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--foreground-muted);
+}
+
+.menuText {
+  font-size: 14px;
+  color: inherit;
+}
+
+.arrow {
+  color: var(--foreground-muted);
+  font-size: 14px;
+  font-family: tahoma;
+}
+
+/* برای RTL فلش به چپ نگاه می‌کند */
+[dir='rtl'] .arrow {
+  transform: scaleX(1);
+}
+
+/* برای LTR فلش به راست نگاه می‌کند */
+[dir='ltr'] .arrow {
+  transform: scaleX(-1);
+}
+
+.menuDivider {
+  height: 1px;
+  background: var(--border);
+  margin: 0 var(--page-padding-x);
+}
+
+/* Skeleton Loader */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--background-secondary) 0%,
+    var(--hover) 50%,
+    var(--background-secondary) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+  border-radius: 4px;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.skeletonTitle {
+  height: 20px;
+  width: 150px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.skeletonSubtitle {
+  height: 12px;
+  width: 200px;
+  border-radius: 4px;
+}
+
+.skeletonIcon {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+}
+
+.skeletonText {
+  height: 14px;
+  width: 100px;
+  border-radius: 4px;
+}
+
+.skeletonArrow {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+}
+

@@ -1,0 +1,312 @@
+.container {
+  background: var(--card-background);
+  min-height: 100vh;
+  padding-bottom: 80px;
+  font-family: "OneBitIranYekan", Arial, Helvetica, sans-serif;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* مخفی کردن scrollbar */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.container::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* Content */
+.content {
+  padding: 0;
+}
+
+.section {
+  margin-bottom: 32px;
+}
+
+.sectionTitle {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--foreground-muted);
+  margin: 24px 0 10px 0;
+  padding: 0 var(--page-padding-x);
+  text-align: start;
+}
+
+/* دکمه‌های مدیریت */
+.actionButtonsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0 var(--page-padding-x) 12px var(--page-padding-x);
+}
+
+.actionButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: none;
+  border: 1px solid var(--border);
+  padding: 12px 16px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 12px;
+  min-height: 44px;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  width: 100%;
+}
+
+.actionButton:hover {
+  background: var(--hover);
+  border-color: var(--primary);
+}
+
+.actionButton:active {
+  transform: scale(0.98);
+}
+
+.itemsContainer {
+  background: var(--background-secondary);
+  border-radius: 12px;
+  margin: 0 var(--page-padding-x) 0 var(--page-padding-x);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid var(--border);
+}
+
+.listItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px var(--page-padding-x);
+  min-height: 46px;
+  font-size: 14px;
+  color: var(--foreground);
+  cursor: pointer;
+  transition: background 0.2s;
+  background: transparent;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.listItem:last-child {
+  border-bottom: none;
+}
+
+.listItem:hover {
+  background: var(--hover);
+}
+
+.listItemStart {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.listItemEnd {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.editButton,
+.deleteButton {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card-background);
+  color: var(--foreground-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.editButton:hover {
+  background: var(--hover);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.deleteButton:hover {
+  background: var(--hover);
+  border-color: var(--error);
+  color: var(--error);
+}
+
+.editButton:active,
+.deleteButton:active {
+  transform: scale(0.95);
+}
+
+.bannerImage {
+  width: 64px;
+  height: 48px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--background-secondary);
+  border: 1px solid var(--border);
+}
+
+.bannerImageImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.bannerImagePlaceholder {
+  width: 64px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: var(--background-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--foreground-muted);
+}
+
+.itemContent {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.itemText {
+  font-size: 14px;
+  color: var(--foreground);
+  margin: 0;
+  text-align: start;
+  font-weight: 400;
+}
+
+.itemValue {
+  font-size: 12px;
+  color: var(--foreground-muted);
+  margin: 0;
+  text-align: start;
+  min-height: 16px;
+}
+
+.statusBadge {
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.statusBadge.active {
+  background: var(--primary-light);
+  color: var(--primary-dark);
+}
+
+.statusBadge.inactive {
+  background: var(--background);
+  color: var(--foreground-muted);
+  border: 1px solid var(--border);
+}
+
+.dark .statusBadge.active {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+.dark .statusBadge.inactive {
+  background: var(--background-secondary);
+  color: var(--foreground-muted);
+  border: 1px solid var(--border);
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not(.dark) .statusBadge.active {
+    background: var(--primary);
+    color: #ffffff;
+  }
+
+  html:not(.dark) .statusBadge.inactive {
+    background: var(--background-secondary);
+    color: var(--foreground-muted);
+    border: 1px solid var(--border);
+  }
+}
+
+.menuDivider {
+  height: 1px;
+  background: var(--border);
+  margin: 0 var(--page-padding-x);
+}
+
+/* Empty State */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 16px;
+  text-align: center;
+}
+
+.emptyIcon {
+  margin-bottom: 16px;
+  opacity: 0.6;
+}
+
+.emptyText {
+  font-size: 14px;
+  color: var(--foreground-muted);
+  margin: 0;
+  font-weight: 300;
+}
+
+/* Dark Mode Support for Empty State */
+.dark .emptyState svg ellipse {
+  fill: var(--background-secondary);
+}
+
+.dark .emptyState svg path {
+  stroke: var(--border);
+}
+
+.dark .emptyState svg path[fill] {
+  fill: var(--background-secondary);
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not(.dark) .emptyState svg ellipse {
+    fill: var(--background-secondary);
+  }
+
+  html:not(.dark) .emptyState svg path {
+    stroke: var(--border);
+  }
+
+  html:not(.dark) .emptyState svg path[fill] {
+    fill: var(--background-secondary);
+  }
+}
+
