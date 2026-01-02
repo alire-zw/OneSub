@@ -1,0 +1,476 @@
+.container {
+  background: var(--card-background);
+  min-height: 100vh;
+  padding-bottom: 80px;
+  font-family: "OneBitIranYekan", Arial, Helvetica, sans-serif;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.container::-webkit-scrollbar {
+  display: none;
+}
+
+.content {
+  padding: 16px var(--page-padding-x);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* باکس محصول مشابه صفحه buy */
+.productBox {
+  background: var(--card-background);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+  padding-bottom: 10px;
+  align-items: flex-end;
+  min-height: 74px;
+}
+
+.productImageContainer {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.productImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.productImagePlaceholder {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  background: var(--background-secondary);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--foreground-muted);
+}
+
+.productContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.productHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.productNameRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+.productName {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--foreground);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.productSeparator {
+  font-size: 12px;
+  color: var(--foreground-muted);
+  flex-shrink: 0;
+}
+
+.productDuration {
+  font-size: 12px;
+  color: var(--foreground-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.productDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.productInfoRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  color: var(--foreground-muted);
+}
+
+.infoSeparator {
+  color: var(--foreground-muted);
+}
+
+.deliveryTimeRow {
+  margin-top: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.clockIcon {
+  color: var(--foreground-muted);
+  flex-shrink: 0;
+}
+
+.deliveryTimeText {
+  font-size: 10px;
+  color: var(--foreground-muted);
+  font-weight: 300;
+}
+
+.toast {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--card-background);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  font-size: 13px;
+  color: var(--foreground);
+  animation: toastSlideIn 0.3s ease-out;
+}
+
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* بخش اطلاعات خریدار و سفارش */
+.infoSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fieldContainer {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.fieldWrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.fieldLabel {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--foreground-secondary);
+}
+
+.fieldItem {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  background: var(--background-secondary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  min-height: 36px;
+}
+
+.fieldItemValue {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--foreground);
+  width: 100%;
+  text-align: center;
+}
+
+.fieldItemWithCopy {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--background-secondary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  min-height: 36px;
+}
+
+.fieldItemWithCopy .fieldItemValue {
+  flex: 1;
+  text-align: right;
+}
+
+.copyButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--foreground-muted);
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.copyButton:hover {
+  background: var(--hover);
+  color: var(--foreground);
+}
+
+.copyButton:active {
+  transform: scale(0.95);
+}
+
+.infoRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--background-secondary);
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  min-height: 36px;
+}
+
+.infoLabelContainer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: nowrap;
+  min-width: 0;
+}
+
+.infoIcon {
+  color: var(--foreground-secondary);
+  flex-shrink: 0;
+}
+
+.infoLabel {
+  font-size: 12px;
+  color: var(--foreground-secondary);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.infoValue {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--foreground);
+}
+
+.sectionTitle {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--foreground-secondary);
+  margin: 0 0 8px 0;
+  padding: 0;
+  text-align: start;
+}
+
+.statusButtons {
+  display: flex;
+  gap: 8px;
+}
+
+.adminMessageInput {
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--card-background);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--foreground);
+  outline: none;
+  transition: all 0.2s ease;
+  resize: vertical;
+  min-height: 80px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.adminMessageInput:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 20%, transparent);
+}
+
+.adminMessageInput::placeholder {
+  color: var(--foreground-muted);
+}
+
+.deliveredButton {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--primary);
+  border: 1px solid var(--primary);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.deliveredButton:hover:not(:disabled) {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+
+.deliveredButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.statusButton {
+  flex: 1;
+  padding: 12px 16px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--foreground-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.statusButton:hover:not(:disabled) {
+  background: var(--hover);
+  border-color: var(--primary);
+  color: var(--foreground);
+}
+
+.statusButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.statusButton.activeStatus {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #ffffff;
+}
+
+/* Empty State */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 16px;
+  text-align: center;
+}
+
+.emptyText {
+  font-size: 14px;
+  color: var(--foreground-muted);
+  margin: 0;
+  font-weight: 300;
+}
+
+/* موبایل */
+@media (max-width: 430px) {
+  .container {
+    padding-bottom: 140px; /* فاصله بیشتر برای دکمه‌های وضعیت در موبایل */
+  }
+
+  .content {
+    gap: 8px;
+  }
+
+  .infoSection {
+    gap: 4px;
+  }
+
+  .fieldGroup {
+    gap: 3px;
+  }
+
+  .fieldWrapper {
+    gap: 2px;
+  }
+
+  .statusButtons {
+    flex-direction: row;
+    gap: 6px;
+  }
+
+  .statusButton {
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+
+  .fieldContainer {
+    flex-direction: row;
+    gap: 6px;
+  }
+
+  .fieldWrapper {
+    flex: 1;
+  }
+
+  .infoRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .infoLabelContainer {
+    width: 100%;
+  }
+
+  .infoValue {
+    text-align: right;
+    width: 100%;
+  }
+}

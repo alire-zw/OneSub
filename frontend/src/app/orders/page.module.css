@@ -1,0 +1,287 @@
+.pageWrapper {
+  padding-bottom: 90px;
+  min-height: 100vh;
+  background: var(--card-background);
+}
+
+.container {
+  padding: 16px;
+  max-width: 100%;
+  font-family: "OneBitIranYekan", Arial, Helvetica, sans-serif;
+}
+
+/* Tabs */
+.tabsContainer {
+  display: flex;
+  gap: 8px;
+  padding: 8px 0;
+  margin-bottom: 8px;
+}
+
+.tab {
+  flex: 1;
+  padding: 8px 12px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: "OneBitIranYekan", Arial, Helvetica, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--foreground-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.tab:hover {
+  background: var(--hover);
+  border-color: var(--primary);
+  color: var(--foreground);
+}
+
+.tab.activeTab {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #ffffff;
+}
+
+/* Orders List */
+.ordersList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.orderItem {
+  background: var(--card-background);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.orderItem:hover {
+  background: var(--background-secondary);
+  border-color: var(--primary);
+}
+
+.orderImageContainer {
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+  background: var(--background-secondary);
+}
+
+.orderImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.orderImagePlaceholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--foreground-muted);
+}
+
+.orderInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.orderHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.orderProductName {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--foreground);
+  margin: 0;
+  flex: 1;
+  line-height: 1.4;
+  font-family: "OneBitIranYekan", Arial, Helvetica, sans-serif;
+}
+
+.deliveryStatusBadge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.deliveryStatusBadge[data-status="received"] {
+  background: var(--warning-light, #fff3cd);
+  color: var(--warning-dark, #856404);
+}
+
+.deliveryStatusBadge[data-status="processing"] {
+  background: var(--primary-light);
+  color: var(--primary-dark);
+}
+
+.deliveryStatusBadge[data-status="delivered"] {
+  background: var(--success-light, #d4edda);
+  color: var(--success-dark, #155724);
+}
+
+.dark .deliveryStatusBadge[data-status="received"] {
+  background: var(--warning);
+  color: #ffffff;
+}
+
+.dark .deliveryStatusBadge[data-status="processing"] {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+.dark .deliveryStatusBadge[data-status="delivered"] {
+  background: var(--success, #28a745);
+  color: #ffffff;
+}
+
+.orderDetails {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--foreground-muted);
+  flex-wrap: wrap;
+  font-family: "OneBitIranYekan", Arial, Helvetica, sans-serif;
+}
+
+.orderNumber {
+  font-family: "OneBitIranYekan", Arial, Helvetica, sans-serif;
+}
+
+.orderSeparator {
+  color: var(--foreground-muted);
+}
+
+.orderAmount {
+  font-family: "OneBitIranYekan", Arial, Helvetica, sans-serif;
+  font-weight: 500;
+  color: var(--foreground);
+}
+
+.orderDate {
+  font-size: 11px;
+  color: var(--foreground-muted);
+  font-family: "OneBitIranYekan", Arial, Helvetica, sans-serif;
+  font-weight: 300;
+}
+
+/* Empty State */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.emptyIcon {
+  width: 64px;
+  height: 64px;
+  color: var(--foreground-muted);
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.emptyText {
+  font-size: 14px;
+  color: var(--foreground-muted);
+  margin: 0;
+  font-family: "OneBitIranYekan", Arial, Helvetica, sans-serif;
+  font-weight: 300;
+}
+
+/* Loading */
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  width: 100%;
+}
+
+.loadingSpinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .container {
+    padding: 12px;
+  }
+
+  .tabsContainer {
+    gap: 6px;
+    padding: 12px 0 8px 0;
+  }
+
+  .tab {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  .ordersList {
+    gap: 10px;
+  }
+
+  .orderItem {
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .orderImageContainer {
+    width: 72px;
+    height: 72px;
+  }
+
+  .orderProductName {
+    font-size: 13px;
+  }
+
+  .orderDetails {
+    font-size: 11px;
+  }
+
+  .orderDate {
+    font-size: 10px;
+  }
+}
+

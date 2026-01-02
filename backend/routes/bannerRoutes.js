@@ -25,10 +25,10 @@ const invalidateBannersCache = async () => {
 // دریافت لیست بنرها (برای ادمین و فرانت)
 router.get('/', async (req, res) => {
   try {
-    const { isActive } = req.query;
+    const { isActive, all } = req.query;
     
     // فقط برای درخواست‌های بدون فیلتر خاص (فرانت) cache می‌کنیم
-    const shouldCache = isActive === undefined || isActive === 'true' || isActive === '1';
+    const shouldCache = (isActive === undefined || isActive === 'true' || isActive === '1') && all !== 'true';
     let cachedData = null;
     let fromCache = false;
 
@@ -57,8 +57,11 @@ router.get('/', async (req, res) => {
     let query = 'SELECT * FROM banners WHERE 1=1';
     const params = [];
 
-    // فیلتر بر اساس وضعیت فعال/غیرفعال
-    if (isActive !== undefined) {
+    // اگر all=true باشد، همه بنرها را برمی‌گردانیم (برای صفحه ادمین)
+    if (all === 'true') {
+      // هیچ فیلتری اعمال نمی‌کنیم
+    } else if (isActive !== undefined) {
+      // فیلتر بر اساس وضعیت فعال/غیرفعال
       query += ' AND isActive = ?';
       params.push(isActive === 'true' || isActive === true);
     } else {
@@ -96,6 +99,35 @@ router.get('/', async (req, res) => {
   }
 });
 
+// اپلود تصویر بنر (باید قبل از route /:id باشد)
+router.post('/upload-image', authenticate, requireAdmin, generalRateLimiter, upload.single('image'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        status: 0,
+        message: 'No image file uploaded'
+      });
+    }
+
+    const imagePath = `/uploads/banners/${req.file.filename}`;
+
+    res.json({
+      status: 1,
+      message: 'Image uploaded successfully',
+      data: {
+        imagePath: imagePath,
+        filename: req.file.filename
+      }
+    });
+  } catch (error) {
+    console.error('Error uploading banner image:', error);
+    res.status(500).json({
+      status: 0,
+      message: error.message || 'Internal server error'
+    });
+  }
+});
+
 // دریافت یک بنر خاص
 router.get('/:id', async (req, res) => {
   try {
@@ -125,35 +157,6 @@ router.get('/:id', async (req, res) => {
     });
   } catch (error) {
     console.error('Error fetching banner:', error);
-    res.status(500).json({
-      status: 0,
-      message: error.message || 'Internal server error'
-    });
-  }
-});
-
-// اپلود تصویر بنر
-router.post('/upload-image', authenticate, requireAdmin, generalRateLimiter, upload.single('image'), async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({
-        status: 0,
-        message: 'No image file uploaded'
-      });
-    }
-
-    const imagePath = `/uploads/banners/${req.file.filename}`;
-
-    res.json({
-      status: 1,
-      message: 'Image uploaded successfully',
-      data: {
-        imagePath: imagePath,
-        filename: req.file.filename
-      }
-    });
-  } catch (error) {
-    console.error('Error uploading banner image:', error);
     res.status(500).json({
       status: 0,
       message: error.message || 'Internal server error'

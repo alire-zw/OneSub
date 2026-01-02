@@ -114,6 +114,67 @@ const checkPendingPayments = async () => {
               }
               
               await refreshUserCache(order.userId);
+
+              // ارسال نوتیفیکیشن‌ها و گزارش ادمین
+              try {
+                const telegramBot = require('./telegramBot');
+                const notificationService = require('./notificationService');
+                
+                // دریافت اطلاعات سفارش و محصول
+                const orderQuery = `
+                  SELECT o.*, p.productName 
+                  FROM orders o
+                  LEFT JOIN products p ON o.productId = p.id
+                  WHERE o.id = ?
+                `;
+                const orders = await mysql.query(orderQuery, [order.orderId]);
+                
+                if (orders && orders.length > 0) {
+                  const orderData = orders[0];
+                  const productName = orderData.productName || 'نامشخص';
+                  const amountInToman = Math.floor(orderData.amount / 10);
+
+                  // دریافت اطلاعات کاربر
+                  const userQuery = 'SELECT telegramID, phoneNumber FROM users WHERE id = ?';
+                  const users = await mysql.query(userQuery, [order.userId]);
+                  
+                  if (users && users.length > 0) {
+                    const user = users[0];
+
+                    // ارسال نوتیفیکیشن تلگرام
+                    if (user.telegramID) {
+                      await telegramBot.sendOrderCompletionNotification(
+                        user.telegramID,
+                        order.orderNumber,
+                        productName,
+                        amountInToman
+                      );
+                    }
+
+                    // ایجاد نوتیفیکیشن درون اپ
+                    const frontendUrl = process.env.FRONTEND_URL || 'https://osf.mirall.ir';
+                    await notificationService.createNotification(
+                      order.userId,
+                      'order',
+                      'خرید شما موفق بود',
+                      `سفارش شما با شماره ${order.orderNumber} با موفقیت ثبت و پرداخت شد.\n\n🛍️ محصول: ${productName}\n💵 مبلغ: ${amountInToman.toLocaleString('fa-IR')} تومان\n\n✅ پس از تایید توسط کارشناسان ما، وضعیت سفارش شما تغییر خواهد کرد و محصول به شما تحویل داده خواهد شد.`,
+                      `${frontendUrl}/dashboard`
+                    );
+
+                    // ارسال گزارش ادمین
+                    await telegramBot.sendAdminOrderReport(
+                      order.userId,
+                      order.orderNumber,
+                      productName,
+                      amountInToman,
+                      'Cryptocurrency',
+                      order.walletAddress
+                    );
+                  }
+                }
+              } catch (error) {
+                console.error(`[Crypto Monitor] Error sending order completion notifications:`, error);
+              }
             }
           }
         }
@@ -173,16 +234,135 @@ const checkPendingPayments = async () => {
                 `;
                 await mysql.query(updateOrderQuery, [orderIdFromTransaction]);
                 console.log(`[Crypto Monitor] Order ${orderIdFromTransaction} completed`);
+
+                // ارسال نوتیفیکیشن‌ها و گزارش ادمین
+                try {
+                  const telegramBot = require('./telegramBot');
+                  const notificationService = require('./notificationService');
+                  
+                  // دریافت اطلاعات سفارش و محصول
+                  const orderQuery = `
+                    SELECT o.*, p.productName 
+                    FROM orders o
+                    LEFT JOIN products p ON o.productId = p.id
+                    WHERE o.orderNumber = ?
+                  `;
+                  const orders = await mysql.query(orderQuery, [orderIdFromTransaction]);
+                  
+                  if (orders && orders.length > 0) {
+                    const orderData = orders[0];
+                    const productName = orderData.productName || 'نامشخص';
+                    const amountInToman = Math.floor(orderData.amount / 10);
+
+                    // دریافت اطلاعات کاربر
+                    const userQuery = 'SELECT telegramID, phoneNumber FROM users WHERE id = ?';
+                    const users = await mysql.query(userQuery, [payment.userId]);
+                    
+                    if (users && users.length > 0) {
+                      const user = users[0];
+
+                      // ارسال نوتیفیکیشن تلگرام
+                      if (user.telegramID) {
+                        await telegramBot.sendOrderCompletionNotification(
+                          user.telegramID,
+                          orderIdFromTransaction,
+                          productName,
+                          amountInToman
+                        );
+                      }
+
+                      // ایجاد نوتیفیکیشن درون اپ
+                      const frontendUrl = process.env.FRONTEND_URL || 'https://osf.mirall.ir';
+                      await notificationService.createNotification(
+                        payment.userId,
+                        'order',
+                        'خرید شما موفق بود',
+                        `سفارش شما با شماره ${orderIdFromTransaction} با موفقیت ثبت و پرداخت شد.\n\n🛍️ محصول: ${productName}\n💵 مبلغ: ${amountInToman.toLocaleString('fa-IR')} تومان\n\n✅ پس از تایید توسط کارشناسان ما، وضعیت سفارش شما تغییر خواهد کرد و محصول به شما تحویل داده خواهد شد.`,
+                        `${frontendUrl}/dashboard`
+                      );
+
+                      // ارسال گزارش ادمین
+                      await telegramBot.sendAdminOrderReport(
+                        payment.userId,
+                        orderIdFromTransaction,
+                        productName,
+                        amountInToman,
+                        'Cryptocurrency',
+                        payment.walletAddress
+                      );
+                    }
+                  }
+                } catch (error) {
+                  console.error(`[Crypto Monitor] Error sending order completion notifications:`, error);
+                }
               } else {
                 // This is a wallet charge, update wallet balance
-                const amountInRial = payment.amountToman * 10;
-                const updateWalletQuery = `
-                  UPDATE users 
-                  SET walletBalance = walletBalance + ? 
-                  WHERE id = ?
-                `;
-                await mysql.query(updateWalletQuery, [amountInRial, payment.userId]);
+            const amountInRial = payment.amountToman * 10;
+                const amountInToman = payment.amountToman;
+            const updateWalletQuery = `
+              UPDATE users 
+              SET walletBalance = walletBalance + ? 
+              WHERE id = ?
+            `;
+            await mysql.query(updateWalletQuery, [amountInRial, payment.userId]);
                 console.log(`[Crypto Monitor] Wallet charged for user ${payment.userId}`);
+
+                // Get user data for notifications
+                const telegramBot = require('./telegramBot');
+                const smsService = require('./smsService');
+                const notificationService = require('./notificationService');
+                
+                const userQuery = `SELECT telegramID, phoneNumber FROM users WHERE id = ?`;
+                const users = await mysql.query(userQuery, [payment.userId]);
+                
+                if (users && users.length > 0) {
+                  const user = users[0];
+                  
+                  // Send Telegram notification if user has telegramID
+                  if (user.telegramID) {
+                    try {
+                      await telegramBot.sendWalletChargeNotification(user.telegramID, amountInToman, null);
+                    } catch (error) {
+                      console.error(`[Crypto Monitor] Error sending Telegram notification:`, error);
+                    }
+                  }
+                  
+                  // Send SMS notification if user has phoneNumber
+                  if (user.phoneNumber) {
+                    try {
+                      await smsService.sendWalletChargeSMS(user.phoneNumber, amountInToman);
+                    } catch (error) {
+                      console.error(`[Crypto Monitor] Error sending SMS notification:`, error);
+                    }
+                  }
+                  
+                  // Create in-app notification
+                  try {
+                    const frontendUrl = process.env.FRONTEND_URL || 'https://osf.mirall.ir';
+                    await notificationService.createNotification(
+                      payment.userId,
+                      'wallet_charge',
+                      'شارژ موفق کیف پول',
+                      `مبلغ ${amountInToman.toLocaleString('fa-IR')} تومان با موفقیت به کیف پول شما افزوده شد.`,
+                      `${frontendUrl}/shop`
+                    );
+                  } catch (error) {
+                    console.error(`[Crypto Monitor] Error creating in-app notification:`, error);
+                  }
+
+                  // Send admin channel report
+                  try {
+                    await telegramBot.sendAdminChargeReport(
+                      payment.userId,
+                      amountInToman,
+                      'Cryptocurrency',
+                      null,
+                      payment.walletAddress
+                    );
+                  } catch (error) {
+                    console.error(`[Crypto Monitor] Error sending admin report:`, error);
+                  }
+                }
               }
             }
 

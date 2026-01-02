@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import "./globals.css";
 import Header from "@/components/Header";
 import TelegramInit from "@/components/TelegramInit";
 import MobileNavbar from "@/components/MobileNavbar";
 import CookieCleaner from "@/components/CookieCleaner";
+import NotificationReader from "@/components/NotificationReader";
+import ErrorSuppressor from "@/components/ErrorSuppressor";
 import { AuthProvider } from "@/contexts/AuthContext";
 
 export const metadata: Metadata = {
@@ -83,9 +86,13 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased min-h-screen flex flex-col font-onebit w-full">
+        <ErrorSuppressor />
         <AuthProvider>
           <CookieCleaner />
           <TelegramInit />
+          <Suspense fallback={null}>
+            <NotificationReader />
+          </Suspense>
           <div className="w-full max-w-[700px] mx-auto flex flex-col min-h-screen">
             <Header />
             <main className="flex-grow w-full pb-20">

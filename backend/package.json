@@ -8,7 +8,9 @@
     "dev": "nodemon server.js",
     "migrate": "node database/migrations.js",
     "test:wallet": "node scripts/testWalletCharge.js",
-    "test:tron": "node scripts/testTronCharge.js"
+    "test:tron": "node scripts/testTronCharge.js",
+    "test:notifications": "node scripts/testNotifications.js",
+    "test:admin-report": "node scripts/testAdminReport.js"
   },
   "keywords": [],
   "author": "",
@@ -23,6 +25,7 @@
     "jsonwebtoken": "^9.0.3",
     "multer": "^2.0.2",
     "mysql2": "^3.6.5",
+    "node-telegram-bot-api": "^0.64.0",
     "redis": "^4.6.12",
     "tronweb": "^6.1.1"
   },

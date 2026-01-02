@@ -22,6 +22,10 @@ export default function Header() {
   const [userName, setUserName] = useState("کاربر وان‌ساب");
   const [walletBalance, setWalletBalance] = useState<number | null>(null);
   const [walletLoading, setWalletLoading] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [notificationsLoading, setNotificationsLoading] = useState(false);
 
   useEffect(() => {
     if (user?.userName) {
@@ -73,8 +77,86 @@ export default function Header() {
     fetchBalance();
   }, [isAuthenticated]);
   
-  // مخفی کردن هدر در صفحه لاگین، پروفایل، پنل ادمین، wallet، payment، cooperation و shop/all و shop/product
-  if (pathname === "/login" || pathname?.startsWith("/login") || pathname === "/profile" || pathname?.startsWith("/profile/") || pathname === "/admin" || pathname?.startsWith("/admin/") || pathname === "/wallet" || pathname?.startsWith("/payment/") || pathname === "/cooperation" || pathname === "/shop/all" || pathname?.startsWith("/shop/product")) {
+  // دریافت تعداد نوتیفیکیشن‌های خوانده نشده
+  useEffect(() => {
+    const fetchUnreadCount = async () => {
+      if (!isAuthenticated) {
+        setUnreadCount(0);
+        return;
+      }
+
+      try {
+        const response = await fetch(API_ENDPOINTS.NOTIFICATIONS.UNREAD_COUNT, {
+          method: 'GET',
+          headers: getAuthHeaders(),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.status === 1 && data.data) {
+            setUnreadCount(data.data.count || 0);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching unread count:', error);
+      }
+    };
+
+    fetchUnreadCount();
+    // Refresh every 30 seconds
+    const interval = setInterval(fetchUnreadCount, 30000);
+    return () => clearInterval(interval);
+  }, [isAuthenticated]);
+
+  // دریافت لیست نوتیفیکیشن‌ها برای dropdown
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      if (!isAuthenticated || !notificationsOpen) {
+        return;
+      }
+
+      setNotificationsLoading(true);
+      try {
+        const response = await fetch(`${API_ENDPOINTS.NOTIFICATIONS.LIST}?limit=5&unreadOnly=true`, {
+          method: 'GET',
+          headers: getAuthHeaders(),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.status === 1 && data.data) {
+            setNotifications(data.data);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+      } finally {
+        setNotificationsLoading(false);
+      }
+    };
+
+    if (notificationsOpen) {
+      fetchNotifications();
+    }
+  }, [isAuthenticated, notificationsOpen]);
+
+  // بستن dropdown وقتی کلیک خارج از آن انجام می‌شود
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (notificationsOpen && !target.closest('.notifications-dropdown')) {
+        setNotificationsOpen(false);
+      }
+    };
+
+    if (notificationsOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [notificationsOpen]);
+  
+  // مخفی کردن هدر در صفحه لاگین، پروفایل، پنل ادمین، wallet، payment، cooperation، notifications و shop/all و shop/product و contact/ticket و contact/create و orders
+  if (pathname === "/login" || pathname?.startsWith("/login") || pathname === "/profile" || pathname?.startsWith("/profile/") || pathname === "/admin" || pathname?.startsWith("/admin/") || pathname === "/wallet" || pathname?.startsWith("/payment/") || pathname === "/cooperation" || pathname === "/notifications" || pathname?.startsWith("/notifications/") || pathname === "/shop/all" || pathname?.startsWith("/shop/product") || pathname?.startsWith("/contact/ticket") || pathname?.startsWith("/contact/create") || pathname === "/orders" || pathname?.startsWith("/orders/")) {
     return null;
   }
 
@@ -159,15 +241,108 @@ export default function Header() {
             )}
 
             {/* باکس نوتیفیکیشن */}
-            <button
-              className="relative bg-card border border-border rounded-md p-1.5 hover:bg-hover transition-colors text-foreground-muted hover:text-foreground flex items-center justify-center"
-              style={{ width: BOX_SIZE, height: BOX_SIZE }}
-              aria-label="اعلان‌ها"
-            >
-              <BellIcon width={20} height={20} className="w-5 h-5" />
-              {/* Badge برای تعداد نوتیفیکیشن‌های خوانده نشده */}
-              <span className="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full border-2 border-card"></span>
-            </button>
+            {isAuthenticated && (
+            <div className="relative notifications-dropdown">
+              <button
+                onClick={() => setNotificationsOpen(!notificationsOpen)}
+                className="relative bg-card border border-border rounded-md p-1.5 hover:bg-hover transition-colors text-foreground-muted hover:text-foreground flex items-center justify-center"
+                style={{ width: BOX_SIZE, height: BOX_SIZE }}
+                aria-label="اعلان‌ها"
+              >
+                <BellIcon width={20} height={20} className="w-5 h-5" />
+                {/* Badge برای تعداد نوتیفیکیشن‌های خوانده نشده */}
+                {unreadCount > 0 && (
+                  <span className="absolute top-0 right-0 min-w-[18px] h-[18px] bg-primary text-white text-[10px] font-bold rounded-full border-2 border-card flex items-center justify-center px-1">
+                    {unreadCount > 99 ? '99+' : unreadCount}
+                  </span>
+                )}
+              </button>
+
+              {/* Dropdown نوتیفیکیشن‌ها */}
+              {notificationsOpen && (
+                <div className="absolute left-0 top-full mt-2 w-80 max-w-[calc(100vw-2rem)] bg-card border border-border rounded-lg shadow-lg z-50 max-h-[400px] flex flex-col">
+                  {/* Header */}
+                  <div className="p-3 border-b border-border">
+                    <h3 className="text-sm font-semibold text-foreground">اعلان‌ها</h3>
+                  </div>
+
+                  {/* لیست نوتیفیکیشن‌ها */}
+                  <div className="overflow-y-auto flex-1">
+                    {notificationsLoading ? (
+                      <div className="p-4 text-center text-foreground-muted text-sm">
+                        در حال بارگذاری...
+                      </div>
+                    ) : notifications.length === 0 ? (
+                      <div className="p-4 text-center text-foreground-muted text-sm">
+                        اعلانی وجود ندارد
+                      </div>
+                    ) : (
+                      notifications.map((notification) => (
+                        <div
+                          key={notification.id}
+                          className={`p-3 border-b border-border hover:bg-hover cursor-pointer transition-colors ${
+                            !notification.isRead ? 'bg-background-secondary' : ''
+                          }`}
+                          onClick={async () => {
+                            // Mark as read if not already read
+                            if (!notification.isRead) {
+                              try {
+                                await fetch(API_ENDPOINTS.NOTIFICATIONS.MARK_READ(notification.id), {
+                                  method: 'POST',
+                                  headers: getAuthHeaders(),
+                                });
+                                // Update local state
+                                setNotifications((prev) =>
+                                  prev.map((notif) =>
+                                    notif.id === notification.id
+                                      ? { ...notif, isRead: true }
+                                      : notif
+                                  )
+                                );
+                                // Update unread count
+                                setUnreadCount((prev) => Math.max(0, prev - 1));
+                              } catch (error) {
+                                console.error('Error marking notification as read:', error);
+                              }
+                            }
+                            
+                            // Navigate to notification detail page
+                            router.push(`/notifications/${notification.id}`);
+                            setNotificationsOpen(false);
+                          }}
+                        >
+                          <div className="flex items-start gap-2">
+                            {!notification.isRead && (
+                              <div className="w-2 h-2 bg-primary rounded-full mt-1.5 flex-shrink-0" />
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <h4 className="text-sm font-medium text-foreground mb-1">
+                                {notification.title}
+                              </h4>
+                              <p className="text-xs text-foreground-muted line-clamp-2">
+                                {notification.message}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+
+                  {/* Footer - لینک به مرکز پیام‌ها */}
+                  <div className="p-3 border-t border-border">
+                    <Link
+                      href="/notifications"
+                      onClick={() => setNotificationsOpen(false)}
+                      className="block w-full text-center text-sm text-primary hover:text-primary-hover font-medium py-2"
+                    >
+                      برو به مرکز پیام‌ها
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+            )}
           </div>
         </div>
       </nav>

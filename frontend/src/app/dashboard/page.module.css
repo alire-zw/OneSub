@@ -1,0 +1,598 @@
+.container {
+  width: 100%;
+  min-height: 100vh;
+  background: var(--card-background);
+  padding-bottom: 80px;
+  font-family: "OneBitIranYekan", Arial, Helvetica, sans-serif;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.container::-webkit-scrollbar {
+  display: none;
+}
+
+.content {
+  padding: 20px var(--page-padding-x) 0 var(--page-padding-x);
+}
+
+.section {
+  margin-bottom: 32px;
+}
+
+.section:first-child {
+  margin-bottom: 12px;
+}
+
+.section:nth-child(2) {
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+.section:last-child {
+  margin-top: 0;
+}
+
+
+.sectionTitle {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--foreground-muted);
+  margin: 0 0 10px 0;
+  padding: 0;
+  text-align: start;
+}
+
+/* باکس محتوای سفارش */
+.orderBox {
+  background: var(--background-secondary);
+  border-radius: 8px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+}
+
+.listItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  cursor: pointer;
+  transition: background 0.2s;
+  background: var(--card-background);
+  border-radius: 8px;
+  padding: 8px;
+  padding-bottom: 10px;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.listItem:hover {
+  opacity: 0.8;
+}
+
+.listItemStart {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.listItemEnd {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  margin-right: auto;
+}
+
+
+.productImageContainer {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.productImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.productImagePlaceholder {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  background: var(--background-secondary);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--foreground-muted);
+}
+
+.productContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.productHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.productNameRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+.productName {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--foreground);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.productSeparator {
+  font-size: 12px;
+  color: var(--foreground-muted);
+  flex-shrink: 0;
+}
+
+.productDuration {
+  font-size: 12px;
+  color: var(--foreground-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.productDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.productInfoRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  color: var(--foreground-muted);
+}
+
+.infoSeparator {
+  color: var(--foreground-muted);
+}
+
+.statusContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.deliveryTimeBadge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+  background: var(--success-light, #d4edda);
+  color: var(--success-dark, #155724);
+}
+
+.deliveryTimeBadge svg {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+}
+
+.dark .deliveryTimeBadge {
+  background: var(--success, #28a745);
+  color: #ffffff;
+}
+
+.deliveryStatusBadge {
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.deliveryStatusBadge[data-status="received"] {
+  background: var(--warning-light, #fff3cd);
+  color: var(--warning-dark, #856404);
+}
+
+.deliveryStatusBadge[data-status="processing"] {
+  background: var(--primary-light);
+  color: var(--primary-dark);
+}
+
+.deliveryStatusBadge[data-status="delivered"] {
+  background: var(--success-light, #d4edda);
+  color: var(--success-dark, #155724);
+}
+
+.dark .deliveryStatusBadge[data-status="received"] {
+  background: var(--warning);
+  color: #ffffff;
+}
+
+.dark .deliveryStatusBadge[data-status="processing"] {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+.dark .deliveryStatusBadge[data-status="delivered"] {
+  background: var(--success, #28a745);
+  color: #ffffff;
+}
+
+/* Empty State */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  text-align: center;
+  width: 100%;
+  min-height: 60px;
+}
+
+.emptyIcon {
+  margin-bottom: 6px;
+  opacity: 0.6;
+}
+
+.emptyIcon svg {
+  width: 40px;
+  height: 40px;
+}
+
+.emptyText {
+  font-size: 10px;
+  color: var(--foreground-muted);
+  margin: 0;
+  font-weight: 300;
+}
+
+/* Dark Mode Support for Empty State */
+.dark .emptyState svg ellipse {
+  fill: var(--background-secondary);
+}
+
+.dark .emptyState svg path {
+  stroke: var(--border);
+}
+
+.dark .emptyState svg path[fill] {
+  fill: var(--background-secondary);
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not(.dark) .emptyState svg ellipse {
+    fill: var(--background-secondary);
+  }
+
+  html:not(.dark) .emptyState svg path {
+    stroke: var(--border);
+  }
+
+  html:not(.dark) .emptyState svg path[fill] {
+    fill: var(--background-secondary);
+  }
+}
+
+/* Skeleton Loading */
+.productBoxSkeleton {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+  padding: 0;
+}
+
+.productImageSkeleton {
+  width: 56px;
+  height: 56px;
+  background: var(--background);
+  border-radius: 4px;
+  flex-shrink: 0;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.productContentSkeleton {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skeletonLine {
+  height: 12px;
+  background: var(--background);
+  border-radius: 4px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* موبایل */
+@media (max-width: 430px) {
+  .content {
+    padding: 12px var(--page-padding-x) 0 var(--page-padding-x);
+  }
+
+  .orderBox {
+    padding: 8px;
+  }
+  
+  .emptyState {
+    padding: 8px;
+    min-height: 56px;
+  }
+  
+  .emptyIcon {
+    margin-bottom: 4px;
+  }
+  
+  .emptyIcon svg {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .emptyText {
+    font-size: 9px;
+  }
+
+  .productImageContainer,
+  .productImagePlaceholder {
+    width: 56px;
+    height: 56px;
+  }
+  
+  .actionButtons {
+    gap: 8px;
+  }
+  
+  .actionButton {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+  
+  .actionButton svg {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .actionButtonRow {
+    gap: 6px;
+  }
+  
+  .referralButton {
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+}
+
+/* دکمه‌های دسترسی سریع */
+.actionButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 0;
+}
+
+.actionButtonRow {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.actionButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: var(--card-background);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--foreground);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  font-family: "OneBitIranYekan", Arial, Helvetica, sans-serif;
+  text-align: center;
+  direction: rtl;
+  width: 100%;
+}
+
+.actionButtons > .actionButton:first-child {
+  background: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
+}
+
+.actionButtons > .actionButton:first-child:hover {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+  color: #ffffff;
+}
+
+.actionButtons > .actionButton:first-child:active {
+  background: var(--primary-dark);
+  border-color: var(--primary-dark);
+  transform: scale(0.98);
+}
+
+.actionButtonRow .actionButton {
+  flex: 1;
+}
+
+.actionButton:hover {
+  background: var(--hover);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.actionButton:active {
+  transform: scale(0.98);
+  background: var(--hover);
+}
+
+.actionButton svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: currentColor;
+}
+
+/* بخش دعوت از دوستان */
+.referralBox {
+  background: var(--background-secondary);
+  border-radius: 8px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.referralContent {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.referralIcon {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  background: var(--primary-light);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+}
+
+.referralText {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.referralTitle {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--foreground);
+  margin: 0;
+}
+
+.referralDescription {
+  font-size: 12px;
+  color: var(--foreground-muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.referralButton {
+  width: 100%;
+  padding: 10px 16px;
+  background: var(--primary);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: "OneBitIranYekan", Arial, Helvetica, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.referralButton:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.referralButton:active {
+  background: var(--primary-dark);
+  transform: translateY(0);
+}
+
+/* موبایل */
+@media (max-width: 430px) {
+  .referralBox {
+    padding: 12px;
+  }
+
+  .referralIcon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .referralIcon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .referralTitle {
+    font-size: 13px;
+  }
+
+  .referralDescription {
+    font-size: 11px;
+  }
+
+  .referralButton {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+}

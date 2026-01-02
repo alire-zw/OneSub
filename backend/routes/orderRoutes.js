@@ -2,15 +2,19 @@ const express = require('express');
 const router = express.Router();
 const mysql = require('../database/mysql');
 const { generalRateLimiter } = require('../middleware/security');
-const { authenticate } = require('../middleware/auth');
+const { authenticate, requireAdmin } = require('../middleware/auth');
 const zibalService = require('../services/zibalService');
 const { getUserData, refreshUserCache } = require('../utils/userCache');
 const nobitexService = require('../services/nobitexService');
 const tronService = require('../services/tronService');
+const telegramBot = require('../services/telegramBot');
+const notificationService = require('../services/notificationService');
+const smsService = require('../services/smsService');
 
 const ZIBAL_MERCHANT = process.env.ZIBAL_MERCHANT || 'zibal';
 const BASE_URL = process.env.BASE_URL || process.env.BACKEND_URL || 'http://localhost:4536';
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:8903';
+const SMS_ORDER_CONFIRMATION_TEMPLATE_ID = process.env.SMS_ORDER_CONFIRMATION_TEMPLATE_ID;
 
 // تولید شماره سفارش به فرمت OS100001, OS100002, ...
 const generateOrderNumber = async () => {
@@ -115,6 +119,55 @@ router.post('/purchase-with-wallet', authenticate, generalRateLimiter, async (re
 
     // به‌روزرسانی cache کاربر
     await refreshUserCache(userId);
+
+    // ارسال نوتیفیکیشن‌ها (فقط برای خرید با کیف پول که مستقیماً completed می‌شود)
+    try {
+      // استفاده از user که قبلاً دریافت شده
+      
+      // ارسال نوتیفیکیشن تلگرام
+      if (user.telegramID) {
+        try {
+          await telegramBot.sendOrderCompletionNotification(
+            user.telegramID,
+            orderNumber,
+            product.productName,
+            price
+          );
+        } catch (telegramError) {
+          console.error('[Order Routes] Error sending Telegram notification:', telegramError);
+        }
+      }
+
+      // ارسال پیامک
+      if (user.phoneNumber && SMS_ORDER_CONFIRMATION_TEMPLATE_ID) {
+        try {
+          await smsService.sendTemplatedSMS(user.phoneNumber, SMS_ORDER_CONFIRMATION_TEMPLATE_ID, [
+            { name: 'orderNumber', value: orderNumber },
+            { name: 'productName', value: product.productName }
+          ]);
+        } catch (smsError) {
+          console.error('[Order Routes] Error sending SMS:', smsError);
+        }
+      }
+
+      // ایجاد نوتیفیکیشن درون اپ
+      try {
+        const notificationResult = await notificationService.createNotification(
+          userId,
+          'order',
+          'خرید شما موفق بود',
+          `سفارش شما با شماره ${orderNumber} با موفقیت ثبت و پرداخت شد.\n\n🛍️ محصول: ${product.productName}\n💵 مبلغ: ${price.toLocaleString('fa-IR')} تومان\n\n✅ پس از تایید توسط کارشناسان ما، وضعیت سفارش شما تغییر خواهد کرد و محصول به شما تحویل داده خواهد شد.`,
+          `${FRONTEND_URL}/dashboard`
+        );
+        console.log('[Order Routes] Notification created successfully:', notificationResult);
+      } catch (notificationError) {
+        console.error('[Order Routes] Error creating notification:', notificationError);
+      }
+
+      // گزارش ادمین برای خرید با کیف پول ارسال نمی‌شود
+    } catch (error) {
+      console.error('[Order Routes] Error sending order notifications:', error);
+    }
 
     res.json({
       status: 1,
@@ -514,6 +567,60 @@ router.get('/callback', async (req, res) => {
 
         // به‌روزرسانی cache کاربر
         await refreshUserCache(order.userId);
+
+        // ارسال نوتیفیکیشن‌ها و گزارش ادمین
+        try {
+          // دریافت اطلاعات محصول
+          const productQuery = 'SELECT productName FROM products WHERE id = ?';
+          const products = await mysql.query(productQuery, [order.productId]);
+          const productName = products && products.length > 0 ? products[0].productName : 'نامشخص';
+          
+          // دریافت اطلاعات کاربر
+          const userQuery = 'SELECT telegramID, phoneNumber FROM users WHERE id = ?';
+          const users = await mysql.query(userQuery, [order.userId]);
+          
+          if (users && users.length > 0) {
+            const user = users[0];
+            // amount در دیتابیس: برای purchase-direct و purchase-with-wallet به صورت تومان، برای purchase-with-crypto به صورت ریال
+            let amountInToman;
+            if (order.paymentMethod === 'crypto') {
+              amountInToman = Math.floor(order.amount / 10); // تبدیل از ریال به تومان
+            } else {
+              amountInToman = order.amount; // به صورت تومان ذخیره شده
+            }
+
+            // ارسال نوتیفیکیشن تلگرام
+            if (user.telegramID) {
+              await telegramBot.sendOrderCompletionNotification(
+                user.telegramID,
+                order.orderNumber,
+                productName,
+                amountInToman
+              );
+            }
+
+            // ایجاد نوتیفیکیشن درون اپ
+            await notificationService.createNotification(
+              order.userId,
+              'order',
+              'خرید شما موفق بود',
+              `سفارش شما با شماره ${order.orderNumber} با موفقیت ثبت و پرداخت شد.\n\n🛍️ محصول: ${productName}\n💵 مبلغ: ${amountInToman.toLocaleString('fa-IR')} تومان\n\n✅ پس از تایید توسط کارشناسان ما، وضعیت سفارش شما تغییر خواهد کرد و محصول به شما تحویل داده خواهد شد.`,
+              `${FRONTEND_URL}/dashboard`
+            );
+
+            // ارسال گزارش ادمین
+            await telegramBot.sendAdminOrderReport(
+              order.userId,
+              order.orderNumber,
+              productName,
+              amountInToman,
+              'OnlineGateway',
+              null
+            );
+          }
+        } catch (error) {
+          console.error('[Order Callback] Error sending completion notifications:', error);
+        }
       }
 
       const redirectUrl = `${FRONTEND_URL}/shop/product/${order.productId}/buy/success?orderNumber=${order.orderNumber}`;
@@ -554,6 +661,49 @@ router.get('/callback', async (req, res) => {
 });
 
 // دریافت اطلاعات سفارش بر اساس شماره سفارش
+// دریافت لیست سفارشات کاربر
+router.get('/', authenticate, generalRateLimiter, async (req, res) => {
+  try {
+    const userId = req.user?.id || req.userId;
+
+    const query = `
+      SELECT
+        o.id,
+        o.userId,
+        o.orderNumber,
+        o.productId,
+        p.productName,
+        p.imagePath,
+        p.duration,
+        p.activationTimeMinutes,
+        o.amount,
+        o.paymentMethod,
+        o.status,
+        o.deliveryStatus,
+        o.createdAt,
+        o.completedAt
+      FROM orders o
+      LEFT JOIN products p ON o.productId = p.id
+      WHERE o.userId = ?
+      ORDER BY o.createdAt DESC
+    `;
+
+    const orders = await mysql.query(query, [userId]);
+
+    res.json({
+      status: 1,
+      message: 'Orders retrieved successfully',
+      data: orders || []
+    });
+  } catch (error) {
+    console.error('Error fetching user orders:', error);
+    res.status(500).json({
+      status: 0,
+      message: error.message || 'Internal server error'
+    });
+  }
+});
+
 router.get('/:orderNumber', authenticate, generalRateLimiter, async (req, res) => {
   try {
     const userId = req.user?.id || req.userId;
@@ -577,7 +727,12 @@ router.get('/:orderNumber', authenticate, generalRateLimiter, async (req, res) =
         o.orderEmail,
         o.amount,
         o.status,
+        o.deliveryStatus,
+        o.adminMessage,
+        o.transactionId,
+        o.walletAddress,
         o.createdAt,
+        o.updatedAt,
         o.completedAt,
         p.productName,
         p.category,
@@ -586,9 +741,17 @@ router.get('/:orderNumber', authenticate, generalRateLimiter, async (req, res) =
         p.activationTimeMinutes,
         p.duration,
         p.regularPrice,
-        p.imagePath
+        p.merchantPrice,
+        p.imagePath,
+        p.additionalInfo,
+        t.refNumber,
+        t.cardNumber,
+        t.trackId,
+        t.status as transactionStatus,
+        t.paidAt as transactionPaidAt
       FROM orders o
       LEFT JOIN products p ON o.productId = p.id
+      LEFT JOIN transactions t ON o.transactionId = t.id
       WHERE o.orderNumber = ? AND o.userId = ?`,
       [orderNumber, userId]
     );
@@ -606,29 +769,329 @@ router.get('/:orderNumber', authenticate, generalRateLimiter, async (req, res) =
       status: 1,
       message: 'Order information retrieved successfully',
       data: {
+        id: order.id,
         orderNumber: order.orderNumber,
         productId: order.productId,
         paymentMethod: order.paymentMethod,
-        userEmail: order.orderEmail,
+        orderEmail: order.orderEmail,
         amount: order.amount,
         status: order.status,
-        date: order.createdAt,
+        deliveryStatus: order.deliveryStatus,
+        adminMessage: order.adminMessage,
+        transactionId: order.transactionId,
+        walletAddress: order.walletAddress,
+        createdAt: order.createdAt,
+        updatedAt: order.updatedAt,
         completedAt: order.completedAt,
-        product: order.productName ? {
-          id: order.productId,
-          productName: order.productName,
-          category: order.category,
-          accountType: order.accountType,
-          activationType: order.activationType,
-          activationTimeMinutes: order.activationTimeMinutes,
-          duration: order.duration,
-          regularPrice: order.regularPrice,
-          imagePath: order.imagePath
-        } : null
+        date: order.createdAt, // برای سازگاری با کد قبلی
+        refNumber: order.refNumber,
+        cardNumber: order.cardNumber,
+        trackId: order.trackId,
+        transactionStatus: order.transactionStatus,
+        transactionPaidAt: order.transactionPaidAt,
+        productName: order.productName,
+        category: order.category,
+        accountType: order.accountType,
+        activationType: order.activationType,
+        activationTimeMinutes: order.activationTimeMinutes,
+        duration: order.duration,
+        regularPrice: order.regularPrice,
+        merchantPrice: order.merchantPrice,
+        imagePath: order.imagePath,
+        additionalInfo: order.additionalInfo
       }
     });
   } catch (error) {
     console.error('Error fetching order:', error);
+    res.status(500).json({
+      status: 0,
+      message: error.message || 'Internal server error'
+    });
+  }
+});
+
+// ============= ADMIN ROUTES =============
+
+// دریافت لیست تمام سفارشات (فقط برای ادمین)
+router.get('/admin/all', authenticate, requireAdmin, generalRateLimiter, async (req, res) => {
+  try {
+    const { deliveryStatus } = req.query;
+    
+    let query = `
+      SELECT 
+        o.id,
+        o.userId,
+        o.orderNumber,
+        o.productId,
+        o.paymentMethod,
+        o.orderEmail,
+        o.amount,
+        o.paidAmount,
+        o.status,
+        o.deliveryStatus,
+        o.adminMessage,
+        o.transactionId,
+        o.walletAddress,
+        o.createdAt,
+        o.updatedAt,
+        o.completedAt,
+        u.userName,
+        u.phoneNumber,
+        u.telegramID,
+        u.userEmail as userEmail,
+        u.loginInfo,
+        p.productName,
+        p.category,
+        p.accountType,
+        p.activationType,
+        p.imagePath,
+        t.refNumber,
+        t.cardNumber,
+        t.trackId,
+        t.paidAt as transactionPaidAt
+      FROM orders o
+      LEFT JOIN users u ON o.userId = u.id
+      LEFT JOIN products p ON o.productId = p.id
+      LEFT JOIN transactions t ON o.transactionId = t.id
+    `;
+    
+    const params = [];
+    
+    if (deliveryStatus) {
+      query += ' WHERE o.deliveryStatus = ?';
+      params.push(deliveryStatus);
+    }
+    
+    query += ' ORDER BY o.createdAt DESC';
+    
+    const orders = await mysql.query(query, params);
+    
+    res.json({
+      status: 1,
+      message: 'Orders retrieved successfully',
+      data: orders || []
+    });
+  } catch (error) {
+    console.error('Error fetching all orders:', error);
+    res.status(500).json({
+      status: 0,
+      message: error.message || 'Internal server error'
+    });
+  }
+});
+
+// دریافت جزئیات یک سفارش خاص (فقط برای ادمین)
+router.get('/admin/:id', authenticate, requireAdmin, generalRateLimiter, async (req, res) => {
+  try {
+    const orderId = req.params.id;
+    
+    const query = `
+      SELECT 
+        o.id,
+        o.userId,
+        o.orderNumber,
+        o.productId,
+        o.paymentMethod,
+        o.orderEmail,
+        o.amount,
+        o.paidAmount,
+        o.status,
+        o.deliveryStatus,
+        o.adminMessage,
+        o.transactionId,
+        o.walletAddress,
+        o.createdAt,
+        o.updatedAt,
+        o.completedAt,
+        u.userName,
+        u.phoneNumber,
+        u.telegramID,
+        u.userEmail as userEmail,
+        u.loginInfo,
+        u.role,
+        p.productName,
+        p.category,
+        p.accountType,
+        p.activationType,
+        p.activationTimeMinutes,
+        p.duration,
+        p.regularPrice,
+        p.merchantPrice,
+        p.imagePath,
+        p.additionalInfo,
+        t.refNumber,
+        t.cardNumber,
+        t.trackId,
+        t.status as transactionStatus,
+        t.paidAt as transactionPaidAt,
+        t.createdAt as transactionCreatedAt
+      FROM orders o
+      LEFT JOIN users u ON o.userId = u.id
+      LEFT JOIN products p ON o.productId = p.id
+      LEFT JOIN transactions t ON o.transactionId = t.id
+      WHERE o.id = ? OR o.orderNumber = ?
+    `;
+    
+    const orders = await mysql.query(query, [orderId, orderId]);
+    
+    if (!orders || orders.length === 0) {
+      return res.status(404).json({
+        status: 0,
+        message: 'Order not found'
+      });
+    }
+    
+    res.json({
+      status: 1,
+      message: 'Order details retrieved successfully',
+      data: orders[0]
+    });
+  } catch (error) {
+    console.error('Error fetching order details:', error);
+    res.status(500).json({
+      status: 0,
+      message: error.message || 'Internal server error'
+    });
+  }
+});
+
+// به‌روزرسانی وضعیت تحویل سفارش (فقط برای ادمین)
+router.put('/admin/:id/delivery-status', authenticate, requireAdmin, generalRateLimiter, async (req, res) => {
+  try {
+    const orderId = req.params.id;
+    const { deliveryStatus, adminMessage } = req.body;
+    
+    // اعتبارسنجی وضعیت تحویل
+    const validStatuses = ['received', 'processing', 'delivered'];
+    if (!deliveryStatus || !validStatuses.includes(deliveryStatus)) {
+      return res.status(400).json({
+        status: 0,
+        message: 'Invalid delivery status. Valid values: received, processing, delivered'
+      });
+    }
+    
+    // دریافت اطلاعات سفارش قبل از به‌روزرسانی
+    const orderQuery = `
+      SELECT 
+        o.*,
+        u.telegramID,
+        u.phoneNumber,
+        p.productName
+      FROM orders o
+      LEFT JOIN users u ON o.userId = u.id
+      LEFT JOIN products p ON o.productId = p.id
+      WHERE o.id = ? OR o.orderNumber = ?
+    `;
+    
+    const orders = await mysql.query(orderQuery, [orderId, orderId]);
+    
+    if (!orders || orders.length === 0) {
+      return res.status(404).json({
+        status: 0,
+        message: 'Order not found'
+      });
+    }
+    
+    const order = orders[0];
+    const oldStatus = order.deliveryStatus;
+    
+    // فقط اگر وضعیت تغییر کرده باشد، پیام ارسال می‌کنیم
+    if (oldStatus === deliveryStatus) {
+      // وضعیت تغییر نکرده، فقط به‌روزرسانی می‌کنیم (با یا بدون adminMessage)
+      const updateQuery = adminMessage !== undefined
+        ? `UPDATE orders SET deliveryStatus = ?, adminMessage = ?, updatedAt = NOW() WHERE id = ? OR orderNumber = ?`
+        : `UPDATE orders SET deliveryStatus = ?, updatedAt = NOW() WHERE id = ? OR orderNumber = ?`;
+      
+      const updateParams = adminMessage !== undefined 
+        ? [deliveryStatus, adminMessage || null, orderId, orderId]
+        : [deliveryStatus, orderId, orderId];
+      
+      await mysql.query(updateQuery, updateParams);
+      
+      return res.json({
+        status: 1,
+        message: 'Delivery status updated successfully'
+      });
+    }
+    
+    // به‌روزرسانی وضعیت (با یا بدون adminMessage)
+    const updateQuery = adminMessage !== undefined
+      ? `UPDATE orders SET deliveryStatus = ?, adminMessage = ?, updatedAt = NOW() WHERE id = ? OR orderNumber = ?`
+      : `UPDATE orders SET deliveryStatus = ?, updatedAt = NOW() WHERE id = ? OR orderNumber = ?`;
+    
+    const updateParams = adminMessage !== undefined 
+      ? [deliveryStatus, adminMessage || null, orderId, orderId]
+      : [deliveryStatus, orderId, orderId];
+    
+    await mysql.query(updateQuery, updateParams);
+    
+    // ارسال پیام‌ها برای وضعیت‌های processing و delivered
+    if (deliveryStatus === 'processing' || deliveryStatus === 'delivered') {
+      try {
+        // ارسال پیام تلگرام
+        if (order.telegramID) {
+          try {
+            await telegramBot.sendOrderDeliveryStatusNotification(
+              order.telegramID,
+              order.orderNumber,
+              order.productName || 'نامشخص',
+              deliveryStatus
+            );
+          } catch (telegramError) {
+            console.error('[Order Routes] Error sending Telegram delivery status notification:', telegramError);
+          }
+        }
+        
+        // ارسال SMS فقط برای وضعیت delivered
+        if (deliveryStatus === 'delivered' && order.phoneNumber) {
+          try {
+            const smsService = require('../services/smsService');
+            await smsService.sendOrderDeliveredSMS(
+              order.phoneNumber,
+              order.orderNumber,
+              order.productName || 'نامشخص'
+            );
+          } catch (smsError) {
+            console.error('[Order Routes] Error sending SMS delivery notification:', smsError);
+          }
+        }
+        
+        // ایجاد نوتیفیکیشن درون اپ
+        try {
+          const FRONTEND_URL = process.env.FRONTEND_URL || 'https://osf.mirall.ir';
+          let notificationTitle = '';
+          let notificationMessage = '';
+          
+          if (deliveryStatus === 'processing') {
+            notificationTitle = 'در حال پردازش';
+            notificationMessage = `سفارش شما با شماره ${order.orderNumber} در حال پردازش می‌باشد و به زودی برای شما ارسال خواهد شد.`;
+          } else if (deliveryStatus === 'delivered') {
+            notificationTitle = 'تحویل شده';
+            notificationMessage = `سفارش شما با شماره ${order.orderNumber} با موفقیت آماده و تحویل داده شده است.`;
+          }
+          
+          await notificationService.createNotification(
+            order.userId,
+            'order',
+            notificationTitle,
+            notificationMessage,
+            `${FRONTEND_URL}/dashboard`
+          );
+        } catch (notificationError) {
+          console.error('[Order Routes] Error creating delivery status notification:', notificationError);
+        }
+      } catch (error) {
+        console.error('[Order Routes] Error sending delivery status notifications:', error);
+        // خطا را لاگ می‌کنیم ولی پاسخ موفقیت‌آمیز برمی‌گردانیم چون وضعیت به‌روزرسانی شده
+      }
+    }
+    
+    res.json({
+      status: 1,
+      message: 'Delivery status updated successfully'
+    });
+  } catch (error) {
+    console.error('Error updating delivery status:', error);
     res.status(500).json({
       status: 0,
       message: error.message || 'Internal server error'

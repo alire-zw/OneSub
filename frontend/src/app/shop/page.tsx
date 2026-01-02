@@ -53,6 +53,10 @@ export default function ShopPage() {
   const { user } = useAuth();
   const { isRegistering, registerStatus } = useTelegramRegister();
   const [searchQuery, setSearchQuery] = useState("");
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [showSearchResults, setShowSearchResults] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const searchResultsRef = useRef<HTMLDivElement>(null);
   const [banners, setBanners] = useState<Banner[]>([]);
   const [bannersLoading, setBannersLoading] = useState(true);
   const [products, setProducts] = useState<Product[]>([]);
@@ -117,6 +121,45 @@ export default function ShopPage() {
     };
 
     fetchBanners();
+  }, []);
+
+  // فیلتر محصولات بر اساس جستجو
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setFilteredProducts([]);
+      setShowSearchResults(false);
+      return;
+    }
+
+    const query = searchQuery.toLowerCase().trim();
+    const filtered = products.filter((product) => {
+      const nameMatch = product.productName?.toLowerCase().includes(query);
+      const categoryMatch = product.category?.toLowerCase().includes(query);
+      const accountTypeMatch = product.accountType?.toLowerCase().includes(query);
+      return nameMatch || categoryMatch || accountTypeMatch;
+    });
+
+    setFilteredProducts(filtered);
+    setShowSearchResults(true);
+  }, [searchQuery, products]);
+
+  // بستن نتایج جستجو هنگام کلیک خارج از آن
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        searchResultsRef.current &&
+        !searchResultsRef.current.contains(event.target as Node) &&
+        searchInputRef.current &&
+        !searchInputRef.current.contains(event.target as Node)
+      ) {
+        setShowSearchResults(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, []);
 
   // بارگذاری محصولات
@@ -284,31 +327,121 @@ export default function ShopPage() {
   return (
     <div className="container mx-auto px-4 py-3 pb-20">
       {/* فیلد جستجو */}
-      <div className="flex items-center gap-2 mb-3">
-        {/* فیلد جستجو */}
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="جستجو..."
-          dir="rtl"
-          className="flex-1 bg-card border border-border rounded-md px-3 py-0 text-sm text-foreground placeholder:text-foreground-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
-          style={{ height: SEARCH_HEIGHT }}
-        />
-        
-        {/* دکمه جستجو */}
-        <button
-          className="bg-primary border border-primary rounded-md hover:bg-primary-hover transition-colors flex items-center justify-center text-white"
-          style={{ width: SEARCH_HEIGHT, height: SEARCH_HEIGHT }}
-          aria-label="جستجو"
-        >
-          <SearchIcon 
-            width={18} 
-            height={18} 
-            className="w-[18px] h-[18px]" 
-            color="white"
+      <div className="relative mb-3">
+        <div className="flex items-center gap-2">
+          {/* فیلد جستجو */}
+          <input
+            ref={searchInputRef}
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onFocus={() => {
+              if (searchQuery.trim() && filteredProducts.length > 0) {
+                setShowSearchResults(true);
+              }
+            }}
+            placeholder="جستجو..."
+            dir="rtl"
+            className="flex-1 bg-card border border-border rounded-md px-3 py-0 text-sm text-foreground placeholder:text-foreground-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
+            style={{ height: SEARCH_HEIGHT }}
           />
-        </button>
+          
+          {/* دکمه جستجو */}
+          <button
+            className="bg-primary border border-primary rounded-md hover:bg-primary-hover transition-colors flex items-center justify-center text-white"
+            style={{ width: SEARCH_HEIGHT, height: SEARCH_HEIGHT }}
+            aria-label="جستجو"
+          >
+            <SearchIcon 
+              width={18} 
+              height={18} 
+              className="w-[18px] h-[18px]" 
+              color="white"
+            />
+          </button>
+        </div>
+
+        {/* نتایج جستجو */}
+        {showSearchResults && searchQuery.trim() && (
+          <div
+            ref={searchResultsRef}
+            className="absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-md shadow-lg max-h-[400px] overflow-y-auto z-50"
+          >
+            {filteredProducts.length === 0 ? (
+              <div className="p-4 text-center text-sm text-foreground-muted">
+                محصولی یافت نشد
+              </div>
+            ) : (
+              <div className="py-1">
+                {filteredProducts.map((product) => {
+                  const productPrice = user?.role?.toLowerCase() === "merchants" ? product.merchantPrice : product.regularPrice;
+                  return (
+                    <div
+                      key={product.id}
+                      onClick={() => {
+                        router.push(`/shop/product/${product.id}`);
+                        setSearchQuery("");
+                        setShowSearchResults(false);
+                      }}
+                      className="flex items-center gap-2 px-3 py-2 hover:bg-background-secondary cursor-pointer transition-colors border-b border-border last:border-b-0"
+                    >
+                      {/* تصویر محصول */}
+                      {product.imagePath ? (
+                        <div className="w-12 h-12 flex-shrink-0 rounded-md overflow-hidden bg-background-secondary">
+                          <img
+                            src={`${API_BASE_URL}${product.imagePath}`}
+                            alt={product.productName}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ) : (
+                        <div className="w-12 h-12 flex-shrink-0 rounded-md bg-background-secondary flex items-center justify-center">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            className="text-foreground-muted"
+                          >
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                          </svg>
+                        </div>
+                      )}
+                      
+                      {/* اطلاعات محصول */}
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-sm font-medium text-foreground truncate">
+                          {product.productName}
+                        </h3>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          <span className="text-xs text-foreground-muted">
+                            {formatDuration(product.duration)}
+                          </span>
+                          <span className="text-xs text-foreground-muted">•</span>
+                          <span className="text-xs text-foreground-muted">
+                            {product.accountType}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* قیمت در سمت چپ */}
+                      <div className="flex-shrink-0">
+                        <span className="text-sm font-medium text-foreground whitespace-nowrap">
+                          {formatPrice(productPrice)} تومان
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* بخش بنرها */}

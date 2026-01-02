@@ -76,6 +76,8 @@ const transactionRoutes = require('./routes/transactionRoutes');
 const merchantRoutes = require('./routes/merchantRoutes');
 const bannerRoutes = require('./routes/bannerRoutes');
 const orderRoutes = require('./routes/orderRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
+const ticketRoutes = require('./routes/ticketRoutes');
 app.use('/api/sms', smsRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/wallet', walletRoutes);
@@ -87,6 +89,12 @@ app.use('/api/transactions', transactionRoutes);
 app.use('/api/merchants', merchantRoutes);
 app.use('/api/banners', bannerRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/tickets', ticketRoutes);
+
+// Initialize Telegram Bot
+const telegramBot = require('./services/telegramBot');
+telegramBot.initBot();
 
 app.get('/health', async (req, res) => {
   try {

@@ -154,6 +154,64 @@ const processDeposit = async (deposit, user) => {
     // به‌روزرسانی cache کاربر
     await refreshUserCache(user.userId);
     
+    // Get user data for notifications
+    const userQuery = `SELECT telegramID, phoneNumber FROM users WHERE id = ?`;
+    const users = await mysql.query(userQuery, [user.userId]);
+    
+    if (users && users.length > 0) {
+      const userData = users[0];
+      
+      // Send Telegram notification if user has telegramID
+      const telegramBot = require('./telegramBot');
+      if (userData.telegramID) {
+        try {
+          const shabaNumber = deposit.payer?.shaba ? deposit.payer.shaba.replace(/^IR/i, '') : null;
+          await telegramBot.sendWalletChargeNotification(userData.telegramID, amountInToman, shabaNumber);
+        } catch (error) {
+          console.error(`[Saman Service] Error sending Telegram notification:`, error);
+        }
+      }
+      
+      // Send SMS notification if user has phoneNumber
+      const smsService = require('./smsService');
+      if (userData.phoneNumber) {
+        try {
+          await smsService.sendWalletChargeSMS(userData.phoneNumber, amountInToman);
+        } catch (error) {
+          console.error(`[Saman Service] Error sending SMS notification:`, error);
+        }
+      }
+      
+      // Create in-app notification
+      const notificationService = require('./notificationService');
+      try {
+        const frontendUrl = process.env.FRONTEND_URL || 'https://osf.mirall.ir';
+        await notificationService.createNotification(
+          user.userId,
+          'wallet_charge',
+          'شارژ موفق کیف پول',
+          `مبلغ ${amountInToman.toLocaleString('fa-IR')} تومان با موفقیت به کیف پول شما افزوده شد.`,
+          `${frontendUrl}/shop`
+        );
+      } catch (error) {
+        console.error(`[Saman Service] Error creating in-app notification:`, error);
+      }
+
+      // Send admin channel report
+      try {
+        const shabaNumber = deposit.payer?.shaba ? deposit.payer.shaba.replace(/^IR/i, '') : null;
+        await telegramBot.sendAdminChargeReport(
+          user.userId,
+          amountInToman,
+          'CartToCard',
+          shabaNumber,
+          null
+        );
+      } catch (error) {
+        console.error(`[Saman Service] Error sending admin report:`, error);
+      }
+    }
+    
     console.log(`[Saman Service] ✅ Deposit processed successfully:`);
     console.log(`[Saman Service]    User: ${user.userName || user.phoneNumber || user.userId}`);
     console.log(`[Saman Service]    Amount: ${amountInToman.toLocaleString('fa-IR')} Toman (${amountInRial.toLocaleString('fa-IR')} Rial)`);

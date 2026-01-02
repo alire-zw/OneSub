@@ -16,6 +16,7 @@ import ThemeIcon from "@/components/icons/ThemeIcon";
 import PendingDeliveryIcon from "@/components/icons/PendingDeliveryIcon";
 import DeliveringIcon from "@/components/icons/DeliveringIcon";
 import DeliveredIcon from "@/components/icons/DeliveredIcon";
+import ContactIcon from "@/components/icons/ContactIcon";
 
 const ArrowIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="none" viewBox="0 0 24 24">
@@ -90,6 +91,11 @@ export default function AdminPanelPage() {
       icon: <OrderIcon width={18} height={18} />,
       text: "مدیریت سفارشات",
       href: "/admin/orders",
+    },
+    {
+      icon: <ContactIcon width={18} height={18} />,
+      text: "مدیریت تیکت‌ها",
+      href: "/admin/tickets",
     },
     {
       icon: <OrderTrackingIcon width={18} height={18} />,

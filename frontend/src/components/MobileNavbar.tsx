@@ -134,8 +134,8 @@ export default function MobileNavbar() {
     }
   }, []);
 
-  // مخفی کردن navbar در صفحه register و profile/info و profile/cards و profile/charge-history و admin/products و admin/accounting و cooperation و shop/all و shop/product (به جز buy/success و buy/failed)
-  if (pathname?.startsWith("/register") || pathname?.startsWith("/profile/info") || pathname?.startsWith("/profile/cards") || pathname?.startsWith("/profile/charge-history") || pathname?.startsWith("/admin/products") || pathname?.startsWith("/admin/accounting") || pathname === "/cooperation" || pathname?.startsWith("/shop/all") || (pathname?.startsWith("/shop/product") && pathname?.endsWith("/buy"))) {
+  // مخفی کردن navbar در صفحه register و profile/info و profile/cards و profile/charge-history و admin/products و admin/accounting و admin/orders و cooperation و shop/all و shop/product (به جز buy/success و buy/failed) و orders
+  if (pathname?.startsWith("/register") || pathname?.startsWith("/profile/info") || pathname?.startsWith("/profile/cards") || pathname?.startsWith("/profile/charge-history") || pathname?.startsWith("/admin/products") || pathname?.startsWith("/admin/accounting") || pathname?.startsWith("/admin/orders") || pathname === "/cooperation" || pathname?.startsWith("/shop/all") || (pathname?.startsWith("/shop/product") && pathname?.endsWith("/buy")) || pathname === "/orders" || pathname?.startsWith("/orders/")) {
     return null;
   }
 
@@ -158,10 +158,14 @@ export default function MobileNavbar() {
         <nav className="flex items-center justify-around py-2 px-2">
           {navItems.map((item) => {
             // اگر در صفحه لاگین باشیم، آیکون پروفایل فعال باشد
-            // اگر در صفحات زیرمجموعه فروشگاه یا wallet باشیم، آیکون فروشگاه فعال باشد
+            // اگر در صفحات زیرمجموعه فروشگاه یا wallet یا notifications باشیم، آیکون فروشگاه فعال باشد
+            // اگر در صفحات زیرمجموعه contact باشیم، آیکون تماس با ما فعال باشد
+            // اگر در صفحات زیرمجموعه orders باشیم، آیکون داشبرد فعال باشد
             const isActive = pathname === item.href || 
                             (pathname === "/login" && item.href === "/profile") ||
-                            (item.href === "/shop" && (pathname?.startsWith("/shop") || pathname === "/wallet"));
+                            (item.href === "/shop" && (pathname?.startsWith("/shop") || pathname === "/wallet" || pathname?.startsWith("/notifications") || pathname?.includes("/buy/success") || pathname?.includes("/buy/failed"))) ||
+                            (item.href === "/contact" && (pathname?.startsWith("/contact"))) ||
+                            (item.href === "/dashboard" && (pathname === "/orders" || pathname?.startsWith("/orders/")));
 
             // بررسی authentication برای صفحه پروفایل و پنل ادمین
             const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {

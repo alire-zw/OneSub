@@ -1,3 +1,4 @@
+require('dotenv').config();
 const mysql = require('mysql2/promise');
 
 const createDatabase = async () => {
@@ -565,6 +566,102 @@ const createOrdersTable = async () => {
   }
 };
 
+const addDeliveryStatusToOrders = async () => {
+  const mysqlDb = require('./mysql');
+  
+  try {
+    // Check if column already exists
+    const columns = await mysqlDb.query(`
+      SHOW COLUMNS FROM orders LIKE 'deliveryStatus'
+    `);
+    
+    if (!columns || columns.length === 0) {
+      // Add deliveryStatus column
+      await mysqlDb.query(`
+        ALTER TABLE orders 
+        ADD COLUMN deliveryStatus ENUM('received', 'processing', 'delivered') 
+        NOT NULL DEFAULT 'received' 
+        COMMENT 'وضعیت تحویل سفارش'
+        AFTER status
+      `);
+      console.log('deliveryStatus column added to orders table');
+      
+      // Add index for better query performance
+      try {
+        await mysqlDb.query(`
+          ALTER TABLE orders 
+          ADD INDEX idx_delivery_status (deliveryStatus)
+        `);
+        console.log('idx_delivery_status index added to orders table');
+      } catch (indexError) {
+        if (indexError.code !== 'ER_DUP_KEYNAME') {
+          console.log('Note: Could not add index (might already exist):', indexError.message);
+        }
+      }
+    } else {
+      // Column exists, check if we need to modify ENUM values
+      try {
+        // Modify column to update ENUM values to English
+        await mysqlDb.query(`
+          ALTER TABLE orders 
+          MODIFY COLUMN deliveryStatus ENUM('received', 'processing', 'delivered') 
+          NOT NULL DEFAULT 'received' 
+          COMMENT 'وضعیت تحویل سفارش'
+        `);
+        console.log('deliveryStatus column ENUM values updated to English');
+        
+        // Update existing orders without deliveryStatus to 'received'
+        await mysqlDb.query(`
+          UPDATE orders 
+          SET deliveryStatus = 'received' 
+          WHERE deliveryStatus IS NULL OR deliveryStatus = ''
+        `);
+        console.log('Existing orders deliveryStatus set to received');
+      } catch (modifyError) {
+        // If modification fails, column might already have correct values
+        console.log('Note: Could not modify deliveryStatus column (might already be correct):', modifyError.message);
+      }
+    }
+  } catch (error) {
+    // Check if error is about column already existing
+    if (error.message && error.message.includes('Duplicate column')) {
+      console.log('deliveryStatus column already exists in orders table');
+    } else {
+      console.error('Error adding/modifying deliveryStatus column to orders table:', error);
+      throw error;
+    }
+  }
+};
+
+const addAdminMessageToOrders = async () => {
+  const mysqlDb = require('./mysql');
+  try {
+    // Check if column exists
+    const columns = await mysqlDb.query('SHOW COLUMNS FROM orders LIKE ?', ['adminMessage']);
+    
+    if (!columns || columns.length === 0) {
+      // Column doesn't exist, add it
+      await mysqlDb.query(`
+        ALTER TABLE orders 
+        ADD COLUMN adminMessage TEXT NULL 
+        COMMENT 'پیام ادمین برای سفارش'
+        AFTER deliveryStatus
+      `);
+      console.log('adminMessage column added to orders table');
+    } else {
+      console.log('adminMessage column already exists in orders table');
+    }
+  } catch (error) {
+    // Check if error is about column already existing
+    if (error.message && error.message.includes('Duplicate column')) {
+      console.log('adminMessage column already exists in orders table');
+    } else {
+      console.error('Error adding adminMessage column to orders table:', error);
+      throw error;
+    }
+  }
+};
+
 const runMigrations = async () => {
   try {
     await createDatabase();
@@ -583,6 +680,11 @@ const runMigrations = async () => {
     await createMerchantsTable();
     await createBannersTable();
     await createOrdersTable();
+    await addDeliveryStatusToOrders();
+    await addAdminMessageToOrders();
+    await createNotificationsTable();
+    await createTicketsTable();
+    await createTicketMessagesTable();
   } catch (error) {
     console.error('Migration failed:', error);
     process.exit(1);
@@ -596,12 +698,118 @@ if (require.main === module) {
   });
 }
 
+const createNotificationsTable = async () => {
+  const mysqlDb = require('./mysql');
+  const createTableQuery = `
+    CREATE TABLE IF NOT EXISTS notifications (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      userId INT NOT NULL,
+      type ENUM('wallet_charge', 'order', 'order_completed', 'order_failed', 'general') NOT NULL DEFAULT 'general',
+      title VARCHAR(255) NOT NULL,
+      message TEXT NOT NULL,
+      link VARCHAR(500) NULL,
+      isRead BOOLEAN DEFAULT FALSE,
+      createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+      readAt DATETIME NULL,
+      INDEX idx_user_id (userId),
+      INDEX idx_is_read (isRead),
+      INDEX idx_type (type),
+      INDEX idx_created_at (createdAt),
+      FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `;
+
+  try {
+    await mysqlDb.query(createTableQuery);
+    console.log('Notifications table created successfully');
+    
+    // Update ENUM if table already exists (for existing databases)
+    try {
+      const alterQuery = `
+        ALTER TABLE notifications 
+        MODIFY COLUMN type ENUM('wallet_charge', 'order', 'order_completed', 'order_failed', 'general') NOT NULL DEFAULT 'general'
+      `;
+      await mysqlDb.query(alterQuery);
+      console.log('Notifications table ENUM updated successfully');
+    } catch (alterError) {
+      // Ignore error if column doesn't exist or ENUM is already updated
+      if (!alterError.message.includes('Duplicate') && !alterError.message.includes('Unknown column')) {
+        console.log('Note: Could not update ENUM (this is normal if table is already up to date)');
+      }
+    }
+  } catch (error) {
+    console.error('Error creating notifications table:', error);
+    throw error;
+  }
+};
+
+const createTicketsTable = async () => {
+  const mysqlDb = require('./mysql');
+  const createTableQuery = `
+    CREATE TABLE IF NOT EXISTS tickets (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      userId INT NOT NULL,
+      type ENUM('sales', 'technical', 'product_support') NOT NULL,
+      subject VARCHAR(255) NOT NULL,
+      message TEXT NOT NULL,
+      orderNumber VARCHAR(50) NULL COMMENT 'شماره سفارش در صورت پشتیبانی محصول',
+      orderId INT NULL COMMENT 'شناسه سفارش',
+      status ENUM('open', 'pending', 'closed') NOT NULL DEFAULT 'open',
+      createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      INDEX idx_user_id (userId),
+      INDEX idx_status (status),
+      INDEX idx_type (type),
+      INDEX idx_order_id (orderId),
+      INDEX idx_created_at (createdAt),
+      FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE,
+      FOREIGN KEY (orderId) REFERENCES orders(id) ON DELETE SET NULL
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `;
+
+  try {
+    await mysqlDb.query(createTableQuery);
+    console.log('Tickets table created successfully');
+  } catch (error) {
+    console.error('Error creating tickets table:', error);
+    throw error;
+  }
+};
+
+const createTicketMessagesTable = async () => {
+  const mysqlDb = require('./mysql');
+  const createTableQuery = `
+    CREATE TABLE IF NOT EXISTS ticket_messages (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      ticketId INT NOT NULL,
+      senderId INT NOT NULL COMMENT 'شناسه فرستنده (userId یا adminId)',
+      senderType ENUM('user', 'admin') NOT NULL,
+      message TEXT NOT NULL,
+      createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+      INDEX idx_ticket_id (ticketId),
+      INDEX idx_created_at (createdAt),
+      FOREIGN KEY (ticketId) REFERENCES tickets(id) ON DELETE CASCADE
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `;
+
+  try {
+    await mysqlDb.query(createTableQuery);
+    console.log('Ticket messages table created successfully');
+  } catch (error) {
+    console.error('Error creating ticket_messages table:', error);
+    throw error;
+  }
+};
+
 module.exports = {
   createUsersTable,
   createCardsTable,
   createProductsTable,
   createMerchantsTable,
   createBannersTable,
+  createNotificationsTable,
+  createTicketsTable,
+  createTicketMessagesTable,
   runMigrations
 };
 

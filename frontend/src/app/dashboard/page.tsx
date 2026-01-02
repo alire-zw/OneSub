@@ -1,57 +1,356 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useRequireAuth } from "@/hooks/useAuth";
+import { API_BASE_URL, API_ENDPOINTS, getAuthHeaders } from "@/config/api";
+import Image from "next/image";
+import ShopIcon from "@/components/icons/ShopIcon";
+import OrderIcon from "@/components/icons/OrderIcon";
+import ContactIcon from "@/components/icons/ContactIcon";
+import styles from './page.module.css';
+
+interface Order {
+  id: number;
+  userId: number;
+  orderNumber: string;
+  productId: number;
+  productName: string;
+  imagePath: string | null;
+  duration: number;
+  activationTimeMinutes: number | null;
+  amount: number;
+  paymentMethod: string;
+  status: string;
+  deliveryStatus: "received" | "processing" | "delivered";
+  createdAt: string;
+  completedAt: string | null;
+}
 
 export default function DashboardPage() {
-  const pathname = usePathname();
+  const router = useRouter();
+  const { isLoading: authLoading } = useRequireAuth("/login");
+  const [latestOrder, setLatestOrder] = useState<Order | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchLatestOrder = async () => {
+      if (authLoading) return;
+
+      setIsLoading(true);
+      try {
+        const response = await fetch(API_ENDPOINTS.ORDERS.LIST, {
+          headers: getAuthHeaders(),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch orders");
+        }
+
+        const data = await response.json();
+        if (data.status === 1 && data.data && data.data.length > 0) {
+          setLatestOrder(data.data[0]);
+        }
+      } catch (error) {
+        console.error("خطا در دریافت سفارشات:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchLatestOrder();
+  }, [authLoading]);
+
+  const formatAmount = (amount: number): string => {
+    return new Intl.NumberFormat("fa-IR").format(amount);
+  };
+
+  const getDeliveryStatusText = (status: Order["deliveryStatus"]): string => {
+    switch (status) {
+      case "received":
+        return "در انتظار تایید";
+      case "processing":
+        return "در حال پردازش";
+      case "delivered":
+        return "تحویل شده";
+      default:
+        return status;
+    }
+  };
+
+  const getDeliveryStatusColor = (status: Order["deliveryStatus"]): string => {
+    switch (status) {
+      case "received":
+        return "var(--warning)";
+      case "processing":
+        return "var(--info)";
+      case "delivered":
+        return "var(--primary)";
+      default:
+        return "var(--foreground-muted)";
+    }
+  };
+
+  const formatDuration = (days: number) => {
+    if (days < 30) {
+      return `${days} روز`;
+    }
+    
+    const months = Math.floor(days / 30);
+    const remainingDays = days % 30;
+    
+    if (months >= 12) {
+      const years = Math.floor(months / 12);
+      const remainingMonths = months % 12;
+      
+      if (remainingMonths > 0) {
+        return `${years} سال و ${remainingMonths} ماه`;
+      }
+      return `${years} سال`;
+    }
+    
+    if (remainingDays > 0) {
+      return `${months} ماه و ${remainingDays} روز`;
+    }
+    return `${months} ماه`;
+  };
+
+  // محاسبه زمان حدودی تحویل
+  const calculateDeliveryTime = (order: Order): string | null => {
+    // برای سفارشات در وضعیت "در انتظار تایید" و "در حال پردازش" نمایش داده می‌شود
+    if (order.deliveryStatus !== "received" && order.deliveryStatus !== "processing") {
+      return null;
+    }
+
+    // بررسی activationTimeMinutes - می‌تواند null باشد یا 0
+    const activationMinutes = order.activationTimeMinutes;
+    if (activationMinutes === null || activationMinutes === undefined || activationMinutes === 0) {
+      return null;
+    }
+
+    // استفاده از completedAt اگر وجود دارد، در غیر این صورت از createdAt
+    const startDate = order.completedAt ? new Date(order.completedAt) : new Date(order.createdAt);
+    if (isNaN(startDate.getTime())) {
+      return null;
+    }
+
+    const deliveryDate = new Date(startDate.getTime() + activationMinutes * 60 * 1000);
+    const now = new Date();
+    
+    const diffMs = deliveryDate.getTime() - now.getTime();
+    const diffMinutes = Math.ceil(diffMs / (60 * 1000));
+    
+    // اگر زمان گذشته است، پیام مناسب نمایش می‌دهیم
+    if (diffMinutes <= 0) {
+      return `زمان تحویل: گذشته است`;
+    }
+    
+    if (diffMinutes < 60) {
+      return `زمان حدودی تحویل: ${diffMinutes} دقیقه`;
+    } else {
+      const hours = Math.floor(diffMinutes / 60);
+      const minutes = diffMinutes % 60;
+      if (minutes > 0) {
+        return `زمان حدودی تحویل: ${hours} ساعت و ${minutes} دقیقه`;
+      }
+      return `زمان حدودی تحویل: ${hours} ساعت`;
+    }
+  };
+
+  if (authLoading || isLoading) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.content}>
+          <div className={styles.section}>
+            <h3 className={styles.sectionTitle}>وضعیت آخرین سفارش شما</h3>
+            <div className={styles.orderBox}>
+              <div className={styles.productBoxSkeleton}>
+                <div className={styles.productImageSkeleton} />
+                <div className={styles.productContentSkeleton}>
+                  <div className={styles.skeletonLine} style={{ width: '60%', marginBottom: '4px' }} />
+                  <div className={styles.skeletonLine} style={{ width: '40%', marginBottom: '4px' }} />
+                  <div className={styles.skeletonLine} style={{ width: '50%' }} />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] px-4">
-      <div className="text-center">
-        <div className="mb-6 flex justify-center">
-          <svg
-            width="64"
-            height="64"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="text-foreground-muted mx-auto"
-          >
-            <path
-              opacity="0.4"
-              d="M13.6903 19.4567C13.5 18.9973 13.5 18.4149 13.5 17.25C13.5 16.0851 13.5 15.5027 13.6903 15.0433C13.944 14.4307 14.4307 13.944 15.0433 13.6903C15.5027 13.5 16.0851 13.5 17.25 13.5C18.4149 13.5 18.9973 13.5 19.4567 13.6903C20.0693 13.944 20.556 14.4307 20.8097 15.0433C21 15.5027 21 16.0851 21 17.25C21 18.4149 21 18.9973 20.8097 19.4567C20.556 20.0693 20.0693 20.556 19.4567 20.8097C18.9973 21 18.4149 21 17.25 21C16.0851 21 15.5027 21 15.0433 20.8097C14.4307 20.556 13.944 20.0693 13.6903 19.4567Z"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="square"
-              strokeLinejoin="round"
-            />
-            <path
-              d="M13.6903 8.95671C13.5 8.49728 13.5 7.91485 13.5 6.75C13.5 5.58515 13.5 5.00272 13.6903 4.54329C13.944 3.93072 14.4307 3.44404 15.0433 3.1903C15.5027 3 16.0851 3 17.25 3C18.4149 3 18.9973 3 19.4567 3.1903C20.0693 3.44404 20.556 3.93072 20.8097 4.54329C21 5.00272 21 5.58515 21 6.75C21 7.91485 21 8.49728 20.8097 8.95671C20.556 9.56928 20.0693 10.056 19.4567 10.3097C18.9973 10.5 18.4149 10.5 17.25 10.5C16.0851 10.5 15.5027 10.5 15.0433 10.3097C14.4307 10.056 13.944 9.56928 13.6903 8.95671Z"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="square"
-              strokeLinejoin="round"
-            />
-            <path
-              d="M3.1903 19.4567C3 18.9973 3 18.4149 3 17.25C3 16.0851 3 15.5027 3.1903 15.0433C3.44404 14.4307 3.93072 13.944 4.54329 13.6903C5.00272 13.5 5.58515 13.5 6.75 13.5C7.91485 13.5 8.49728 13.5 8.95671 13.6903C9.56928 13.944 10.056 14.4307 10.3097 15.0433C10.5 15.5027 10.5 16.0851 10.5 17.25C10.5 18.4149 10.5 18.9973 10.3097 19.4567C10.056 20.0693 9.56928 20.556 8.95671 20.8097C8.49728 21 7.91485 21 6.75 21C5.58515 21 5.00272 21 4.54329 20.8097C3.93072 20.556 3.44404 20.0693 3.1903 19.4567Z"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="square"
-              strokeLinejoin="round"
-            />
-            <path
-              opacity="0.4"
-              d="M3.1903 8.95671C3 8.49728 3 7.91485 3 6.75C3 5.58515 3 5.00272 3.1903 4.54329C3.44404 3.93072 3.93072 3.44404 4.54329 3.1903C5.00272 3 5.58515 3 6.75 3C7.91485 3 8.49728 3 8.95671 3.1903C9.56928 3.44404 10.056 3.93072 10.3097 4.54329C10.5 5.00272 10.5 5.58515 10.5 6.75C10.5 7.91485 10.5 8.49728 10.3097 8.95671C10.056 9.56928 9.56928 10.056 8.95671 10.3097C8.49728 10.5 7.91485 10.5 6.75 10.5C5.58515 10.5 5.00272 10.5 4.54329 10.3097C3.93072 10.056 3.44404 9.56928 3.1903 8.95671Z"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="square"
-              strokeLinejoin="round"
-            />
-          </svg>
+    <div className={styles.container}>
+      <div className={styles.content}>
+        <div className={styles.section}>
+          <h3 className={styles.sectionTitle}>وضعیت آخرین سفارش شما</h3>
+          <div className={styles.orderBox}>
+            {latestOrder ? (
+              <div 
+                className={styles.listItem}
+                onClick={() => router.push(`/orders/${latestOrder.orderNumber}`)}
+              >
+                <div className={styles.listItemStart}>
+                  {latestOrder.imagePath ? (
+                    <div className={styles.productImageContainer}>
+                      <Image
+                        src={`${API_BASE_URL}${latestOrder.imagePath}`}
+                        alt={latestOrder.productName}
+                        width={56}
+                        height={56}
+                        className={styles.productImage}
+                      />
+                    </div>
+                  ) : (
+                    <div className={styles.productImagePlaceholder}>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        className="text-foreground-muted"
+                      >
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21 15 16 10 5 21"></polyline>
+                      </svg>
+                    </div>
+                  )}
+
+                  <div className={styles.productContent}>
+                    <div className={styles.productHeader}>
+                      <div className={styles.productNameRow}>
+                        <h3 className={styles.productName}>{latestOrder.productName}</h3>
+                        <span className={styles.productSeparator}>|</span>
+                        <span className={styles.productDuration}>{formatDuration(latestOrder.duration)}</span>
+                      </div>
+                    </div>
+
+                    <div className={styles.productDetails}>
+                      <div className={styles.productInfoRow}>
+                        <span>{latestOrder.orderNumber}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className={styles.listItemEnd}>
+                  <div className={styles.statusContainer}>
+                    <div 
+                      className={styles.deliveryStatusBadge} 
+                      data-status={latestOrder.deliveryStatus}
+                    >
+                      {getDeliveryStatusText(latestOrder.deliveryStatus)}
+                    </div>
+                    {(() => {
+                      const deliveryTime = (latestOrder.deliveryStatus === "received" || latestOrder.deliveryStatus === "processing") 
+                        ? calculateDeliveryTime(latestOrder) 
+                        : null;
+                      return deliveryTime ? (
+                        <div className={styles.deliveryTimeBadge}>
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                          </svg>
+                          <span>{deliveryTime}</span>
+                        </div>
+                      ) : null;
+                    })()}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className={styles.emptyState}>
+              <div className={styles.emptyIcon}>
+                <svg
+                  width="40"
+                  height="40"
+                  viewBox="0 0 64 41"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                    <title>No data</title>
+                    <g transform="translate(0 1)" fill="none" fillRule="evenodd">
+                      <ellipse
+                        fill="var(--background-secondary)"
+                        cx="32"
+                        cy="33"
+                        rx="32"
+                        ry="7"
+                      ></ellipse>
+                      <g fillRule="nonzero" stroke="var(--border)">
+                        <path d="M55 12.76L44.854 1.258C44.367.474 43.656 0 42.907 0H21.093c-.749 0-1.46.474-1.947 1.257L9 12.761V22h46v-9.24z"></path>
+                        <path
+                          d="M41.613 15.931c0-1.605.994-2.93 2.227-2.931H55v18.137C55 33.26 53.68 35 52.05 35h-40.1C10.32 35 9 33.259 9 31.137V13h11.16c1.233 0 2.227 1.323 2.227 2.928v.022c0 1.605 1.005 2.901 2.237 2.901h14.752c1.232 0 2.237-1.308 2.237-2.913v-.007z"
+                          fill="var(--background-secondary)"
+                        ></path>
+                      </g>
+                    </g>
+                  </svg>
+                </div>
+                <p className={styles.emptyText}>هنوز سفارشی ثبت نشده است</p>
+              </div>
+            )}
+          </div>
         </div>
-        <p className="text-foreground-muted text-lg">صفحه در حال توسعه است</p>
+
+        {/* دکمه‌های دسترسی سریع */}
+        <div className={styles.section}>
+          <h3 className={styles.sectionTitle}>دکمه‌های اقدام سریع</h3>
+          <div className={styles.actionButtons}>
+            <button
+              className={styles.actionButton}
+              onClick={() => router.push("/shop/all")}
+            >
+              <ShopIcon width={18} height={18} />
+              خرید اشتراک جدید
+            </button>
+            <div className={styles.actionButtonRow}>
+              <button
+                className={styles.actionButton}
+                onClick={() => router.push("/orders")}
+              >
+                <OrderIcon width={18} height={18} />
+                اشتراک‌های من
+              </button>
+              <button
+                className={styles.actionButton}
+                onClick={() => router.push("/contact")}
+              >
+                <ContactIcon width={18} height={18} />
+                ثبت تیکت پشتیبانی
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* بخش دعوت از دوستان و اشتراک رایگان */}
+        <div className={styles.section}>
+          <h3 className={styles.sectionTitle}>دعوت از دوستان و اشتراک رایگان</h3>
+          <div className={styles.referralBox}>
+            <div className={styles.referralContent}>
+              <div className={styles.referralIcon}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="8.5" cy="7" r="4"></circle>
+                  <path d="M20 8v6"></path>
+                  <path d="M23 11h-6"></path>
+                </svg>
+              </div>
+              <div className={styles.referralText}>
+                <h4 className={styles.referralTitle}>دعوت از دوستان</h4>
+                <p className={styles.referralDescription}>
+                  دوستان خود را دعوت کنید و برای هر دعوت موفق، اشتراک رایگان دریافت کنید
+                </p>
+              </div>
+            </div>
+            <button className={styles.referralButton}>
+              دعوت از دوستان
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
 }
-

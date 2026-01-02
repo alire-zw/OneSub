@@ -5,6 +5,9 @@ const { generalRateLimiter } = require('../middleware/security');
 const { authenticate } = require('../middleware/auth');
 const zibalService = require('../services/zibalService');
 const { getUserData } = require('../utils/userCache');
+const telegramBot = require('../services/telegramBot');
+const notificationService = require('../services/notificationService');
+const smsService = require('../services/smsService');
 
 const ZIBAL_MERCHANT = process.env.ZIBAL_MERCHANT || 'zibal';
 const BASE_URL = process.env.BASE_URL || process.env.BACKEND_URL || 'http://localhost:4536';
@@ -160,6 +163,78 @@ router.get('/callback', async (req, res) => {
         
         const { refreshUserCache } = require('../utils/userCache');
         await refreshUserCache(transaction.userId);
+
+        // Send notifications and admin report (only for wallet charges, not orders)
+        if (!transaction.orderId || !transaction.orderId.startsWith('OS')) {
+          const amountToman = Math.floor(verifyResult.amount / 10);
+          
+          // Get user data for notifications
+          const userQuery = `SELECT telegramID, phoneNumber, loginInfo FROM users WHERE id = ?`;
+          const users = await mysql.query(userQuery, [transaction.userId]);
+          
+          // Get user's SHABA number from cards
+          let userShabaNumber = null;
+          try {
+            const shabaQuery = `SELECT shebaNumber FROM cards WHERE userId = ? AND shebaNumber IS NOT NULL AND shebaNumber != '' LIMIT 1`;
+            const shabaResult = await mysql.query(shabaQuery, [transaction.userId]);
+            if (shabaResult && shabaResult.length > 0) {
+              userShabaNumber = shabaResult[0].shebaNumber;
+            }
+          } catch (error) {
+            console.error(`[Wallet Callback] Error fetching user SHABA:`, error);
+          }
+          
+          if (users && users.length > 0) {
+            const user = users[0];
+            
+            // Send Telegram notification if user has telegramID
+            if (user.telegramID) {
+              try {
+                await telegramBot.sendWalletChargeNotification(user.telegramID, amountToman, userShabaNumber);
+              } catch (error) {
+                console.error(`[Wallet Callback] Error sending Telegram notification:`, error);
+              }
+            }
+            
+            // Send SMS notification if user has phoneNumber
+            if (user.phoneNumber) {
+              try {
+                await smsService.sendWalletChargeSMS(user.phoneNumber, amountToman);
+              } catch (error) {
+                console.error(`[Wallet Callback] Error sending SMS notification:`, error);
+              }
+            }
+            
+            // Create in-app notification
+            try {
+              const frontendUrl = process.env.FRONTEND_URL || 'https://osf.mirall.ir';
+              await notificationService.createNotification(
+                transaction.userId,
+                'wallet_charge',
+                'شارژ موفق کیف پول',
+                `مبلغ ${amountToman.toLocaleString('fa-IR')} تومان با موفقیت به کیف پول شما افزوده شد.`,
+                `${frontendUrl}/shop`
+              );
+            } catch (error) {
+              console.error(`[Wallet Callback] Error creating in-app notification:`, error);
+            }
+
+            // Send admin channel report
+            try {
+              console.log(`[Wallet Callback] Sending admin report for user ${transaction.userId}, amount: ${amountToman}`);
+              const adminReportResult = await telegramBot.sendAdminChargeReport(
+                transaction.userId,
+                amountToman,
+                'OnlineGateway',
+                userShabaNumber,
+                null
+              );
+              console.log(`[Wallet Callback] Admin report result:`, adminReportResult);
+            } catch (error) {
+              console.error(`[Wallet Callback] Error sending admin report:`, error);
+            }
+          }
+        }
       }
 
       const amountToman = Math.floor(verifyResult.amount / 10);

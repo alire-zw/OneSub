@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import PageHeader from "@/components/PageHeader";
 import styles from "./Transactions.module.css";
@@ -27,7 +27,7 @@ interface Transaction {
   updatedAt: string;
 }
 
-export default function AdminTransactionsPage() {
+function AdminTransactionsPageContent() {
   const router = useRouter();
   const { isLoading: authLoading } = useRequireAuth("/login");
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -296,6 +296,27 @@ export default function AdminTransactionsPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AdminTransactionsPage() {
+  return (
+    <Suspense fallback={
+      <div className={styles.container}>
+        <PageHeader title="تراکنش‌های مالی" />
+        <div className={styles.content}>
+          <div className={styles.section}>
+            <div className={styles.itemsContainer}>
+              <div className={styles.emptyState}>
+                <p className={styles.emptyText}>در حال بارگذاری...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }>
+      <AdminTransactionsPageContent />
+    </Suspense>
   );
 }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
 import PageHeader from "@/components/PageHeader";
 import { useRequireAuth, useAuth } from "@/hooks/useAuth";
@@ -57,7 +57,7 @@ interface CryptoPaymentData {
   createdAt: string;
 }
 
-export default function BuyProductPage() {
+function BuyProductPageContent() {
   const router = useRouter();
   const params = useParams();
   const searchParams = useSearchParams();
@@ -2124,6 +2124,20 @@ export default function BuyProductPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function BuyProductPage() {
+  return (
+    <Suspense fallback={
+      <div className={styles.container}>
+        <div className={styles.loadingContainer}>
+          <div className={styles.loadingSpinner}></div>
+        </div>
+      </div>
+    }>
+      <BuyProductPageContent />
+    </Suspense>
   );
 }
 

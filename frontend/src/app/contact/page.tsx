@@ -1,49 +1,382 @@
 "use client";
 
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
+import { API_BASE_URL, API_ENDPOINTS, getAuthHeaders } from "@/config/api";
+import styles from "./page.module.css";
+import ContactIcon from "@/components/icons/ContactIcon";
+import Notification from "@/components/Notification";
+import CenterModal from "@/components/CenterModal";
+
+interface Ticket {
+  id: number;
+  type: "sales" | "technical" | "product_support";
+  subject: string;
+  message: string;
+  status: "open" | "pending" | "closed";
+  createdAt: string;
+  updatedAt: string;
+}
+
 export default function ContactPage() {
-  return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] px-4">
-      <div className="text-center">
-        <div className="mb-6 flex justify-center">
-          <svg
-            width="64"
-            height="64"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="text-foreground-muted mx-auto"
-          >
-            <path
-              d="M17 13.8045C17 13.4588 17 13.286 17.052 13.132C17.2032 12.6844 17.6018 12.5108 18.0011 12.3289C18.45 12.1244 18.6744 12.0222 18.8968 12.0042C19.1493 11.9838 19.4022 12.0382 19.618 12.1593C19.9041 12.3198 20.1036 12.6249 20.3079 12.873C21.2512 14.0188 21.7229 14.5918 21.8955 15.2236C22.0348 15.7334 22.0348 16.2666 21.8955 16.7764C21.6438 17.6979 20.8485 18.4704 20.2598 19.1854C19.9587 19.5511 19.8081 19.734 19.618 19.8407C19.4022 19.9618 19.1493 20.0162 18.8968 19.9958C18.6744 19.9778 18.45 19.8756 18.0011 19.6711C17.6018 19.4892 17.2032 19.3156 17.052 18.868C17 18.714 17 18.5412 17 18.1955V13.8045Z"
-              stroke="currentColor"
-              strokeWidth="1.5"
-            />
-            <path
-              opacity="0.4"
-              d="M9.5 21C10.8807 22.3333 13.1193 22.3333 14.5 21"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <path
-              d="M7 13.8045C7 13.3693 6.98778 12.9782 6.63591 12.6722C6.50793 12.5609 6.33825 12.4836 5.99891 12.329C5.55001 12.1246 5.32556 12.0224 5.10316 12.0044C4.43591 11.9504 4.07692 12.4058 3.69213 12.8731C2.74875 14.0189 2.27706 14.5918 2.10446 15.2236C1.96518 15.7334 1.96518 16.2666 2.10446 16.7764C2.3562 17.6979 3.15152 18.4702 3.74021 19.1852C4.11129 19.6359 4.46577 20.0472 5.10316 19.9956C5.32556 19.9776 5.55001 19.8754 5.99891 19.6709C6.33825 19.5164 6.50793 19.4391 6.63591 19.3278C6.98778 19.0218 7 18.6307 7 18.1954V13.8045Z"
-              stroke="currentColor"
-              strokeWidth="1.5"
-            />
-            <path
-              opacity="0.4"
-              d="M2 16V12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12L22.0001 16"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+  const router = useRouter();
+  const { user, isLoading: authLoading } = useAuth();
+  const isAuthenticated = !!user;
+  const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [notification, setNotification] = useState({
+    show: false,
+    message: "",
+    type: "success" as "success" | "error" | "warning" | "info",
+  });
+
+  const [chatMessages, setChatMessages] = useState<Array<{
+    id: number;
+    sender: "user" | "support";
+    message: string;
+    timestamp: string;
+  }>>([]);
+  const [chatInput, setChatInput] = useState("");
+
+  // بارگذاری تیکت‌ها (فقط اگر کاربر لاگین باشد)
+  useEffect(() => {
+    const fetchTickets = async () => {
+      if (authLoading) return;
+      
+      // فقط اگر کاربر لاگین باشد، تیکت‌ها را بارگذاری کن
+      if (!isAuthenticated) {
+        setIsLoading(false);
+        return;
+      }
+
+      setIsLoading(true);
+      try {
+        const response = await fetch(API_ENDPOINTS.TICKETS.LIST, {
+          headers: getAuthHeaders(),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch tickets");
+        }
+
+        const data = await response.json();
+        if (data.status === 1 && data.data) {
+          setTickets(data.data);
+        }
+      } catch (error) {
+        console.error("خطا در دریافت تیکت‌ها:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchTickets();
+  }, [authLoading, isAuthenticated]);
+
+  const showNotification = (message: string, type: "success" | "error" | "warning" | "info" = "success") => {
+    setNotification({ show: true, message, type });
+  };
+
+  const hideNotification = () => {
+    setNotification((prev) => ({ ...prev, show: false }));
+  };
+
+
+  const handleSendChatMessage = () => {
+    if (!chatInput.trim()) return;
+
+    const newMessage = {
+      id: Date.now(),
+      sender: "user" as const,
+      message: chatInput,
+      timestamp: new Date().toISOString(),
+    };
+
+    setChatMessages((prev) => [...prev, newMessage]);
+    setChatInput("");
+
+    // شبیه‌سازی پاسخ پشتیبانی
+    setTimeout(() => {
+      const supportMessage = {
+        id: Date.now() + 1,
+        sender: "support" as const,
+        message: "پیام شما دریافت شد. در حال بررسی هستیم...",
+        timestamp: new Date().toISOString(),
+      };
+      setChatMessages((prev) => [...prev, supportMessage]);
+    }, 1000);
+  };
+
+  const getTypeLabel = (type: string): string => {
+    switch (type) {
+      case "sales":
+        return "فروش";
+      case "technical":
+        return "فنی";
+      case "product_support":
+        return "پشتیبانی محصول";
+      default:
+        return type;
+    }
+  };
+
+  const getStatusText = (status: Ticket["status"]): string => {
+    switch (status) {
+      case "open":
+        return "باز";
+      case "pending":
+        return "در انتظار";
+      case "closed":
+        return "بسته شده";
+      default:
+        return status;
+    }
+  };
+
+  const getStatusColor = (status: Ticket["status"]): string => {
+    switch (status) {
+      case "open":
+        return "var(--primary)";
+      case "pending":
+        return "var(--warning)";
+      case "closed":
+        return "var(--foreground-muted)";
+      default:
+        return "var(--foreground-muted)";
+    }
+  };
+
+  const formatDate = (dateString: string): string => {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat("fa-IR", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(date);
+  };
+
+  if (authLoading || (isAuthenticated && isLoading)) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.content}>
+          {isAuthenticated && (
+            <div className={styles.section}>
+              <h3 className={styles.sectionTitle}>تیکت‌های پشتیبانی</h3>
+              <div className={styles.ticketsBox}>
+                <div className={styles.emptyState}>
+                  <p className={styles.emptyText}>در حال بارگذاری...</p>
+                </div>
+              </div>
+            </div>
+          )}
+          <div className={styles.section}>
+            <h3 className={styles.sectionTitle}>چت آنلاین با پشتیبانی</h3>
+            <div className={styles.ticketsBox}>
+              <div className={styles.emptyState}>
+                <p className={styles.emptyText}>در حال بارگذاری...</p>
+              </div>
+            </div>
+          </div>
         </div>
-        <p className="text-foreground-muted text-lg">صفحه در حال توسعه است</p>
       </div>
+    );
+  }
+
+  return (
+    <div className={styles.container}>
+      <div className={styles.content}>
+        {/* بخش تیکت‌ها - فقط برای کاربران لاگین شده */}
+        {isAuthenticated && (
+          <div className={styles.section}>
+          <h3 className={styles.sectionTitle}>تیکت‌های پشتیبانی</h3>
+          <div className={styles.actionButtons}>
+            <button
+              className={styles.actionButton}
+              onClick={() => router.push("/contact/create")}
+            >
+              <ContactIcon width={18} height={18} />
+              ایجاد تیکت جدید
+            </button>
+          </div>
+
+          <div className={styles.ticketsBox}>
+            {tickets.length === 0 ? (
+              <div className={styles.emptyState}>
+                <div className={styles.emptyIcon}>
+                  <svg
+                    width="64"
+                    height="41"
+                    viewBox="0 0 64 41"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <title>No data</title>
+                    <g transform="translate(0 1)" fill="none" fillRule="evenodd">
+                      <ellipse
+                        fill="var(--background-secondary)"
+                        cx="32"
+                        cy="33"
+                        rx="32"
+                        ry="7"
+                      ></ellipse>
+                      <g fillRule="nonzero" stroke="var(--border)">
+                        <path d="M55 12.76L44.854 1.258C44.367.474 43.656 0 42.907 0H21.093c-.749 0-1.46.474-1.947 1.257L9 12.761V22h46v-9.24z"></path>
+                        <path
+                          d="M41.613 15.931c0-1.605.994-2.93 2.227-2.931H55v18.137C55 33.26 53.68 35 52.05 35h-40.1C10.32 35 9 33.259 9 31.137V13h11.16c1.233 0 2.227 1.323 2.227 2.928v.022c0 1.605 1.005 2.901 2.237 2.901h14.752c1.232 0 2.237-1.308 2.237-2.913v-.007z"
+                          fill="var(--background-secondary)"
+                        ></path>
+                      </g>
+                    </g>
+                  </svg>
+                </div>
+                <p className={styles.emptyText}>هیچ تیکتی ثبت نشده است</p>
+              </div>
+            ) : (
+              tickets.map((ticket, index) => (
+                <div key={ticket.id}>
+                  <div 
+                    className={styles.ticketItem}
+                  >
+                    <div className={styles.ticketItemStart}>
+                      <div className={styles.ticketContent}>
+                        <div className={styles.ticketHeader}>
+                          <h4 className={styles.ticketSubject}>{ticket.subject}</h4>
+                          <div className={styles.ticketHeaderBadges}>
+                            <span className={styles.ticketTypeBadge}>{getTypeLabel(ticket.type)}</span>
+                            <div
+                              className={styles.statusBadge}
+                              style={{ color: getStatusColor(ticket.status) }}
+                            >
+                              {getStatusText(ticket.status)}
+                            </div>
+                          </div>
+                        </div>
+                        <p className={styles.ticketMessage}>{ticket.message}</p>
+                        <div className={styles.ticketDate}>
+                          {formatDate(ticket.createdAt)}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  {index < tickets.length - 1 && (
+                    <div className={styles.menuDivider}></div>
+                  )}
+                </div>
+              ))
+            )}
+          </div>
+          </div>
+        )}
+
+        {/* بخش چت آنلاین */}
+        <div className={styles.section}>
+          <h3 className={styles.sectionTitle}>چت آنلاین با پشتیبانی</h3>
+          <div className={styles.actionButtons}>
+            <button
+              className={styles.actionButton}
+              onClick={() => setIsChatOpen(true)}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+              </svg>
+              شروع چت آنلاین
+            </button>
+          </div>
+          <div className={styles.chatInfoBox}>
+            <div className={styles.chatInfoContent}>
+              <div className={styles.chatInfoIcon}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+              </div>
+              <div className={styles.chatInfoText}>
+                <h4 className={styles.chatInfoTitle}>پشتیبانی آنلاین</h4>
+                <p className={styles.chatInfoDescription}>
+                  برای دریافت پاسخ سریع‌تر، می‌توانید از چت آنلاین استفاده کنید. تیم پشتیبانی ما در ساعات کاری آماده پاسخگویی است.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Modal چت آنلاین */}
+      <CenterModal
+        isOpen={isChatOpen}
+        onClose={() => {
+          setIsChatOpen(false);
+          setChatMessages([]);
+          setChatInput("");
+        }}
+        title="چت آنلاین با پشتیبانی"
+        showCloseButton={true}
+        buttons={[]}
+      >
+        <div className={styles.chatContainer}>
+          <div className={styles.chatMessages}>
+            {chatMessages.length === 0 ? (
+              <div className={styles.chatEmptyState}>
+                <p className={styles.chatEmptyText}>
+                  سلام! چطور می‌تونم کمکتون کنم؟
+                </p>
+              </div>
+            ) : (
+              chatMessages.map((msg) => (
+                <div
+                  key={msg.id}
+                  className={`${styles.chatMessage} ${
+                    msg.sender === "user" ? styles.chatMessageUser : styles.chatMessageSupport
+                  }`}
+                >
+                  <div className={styles.chatMessageBubble}>
+                    <p className={styles.chatMessageText}>{msg.message}</p>
+                    <span className={styles.chatMessageTime}>
+                      {new Date(msg.timestamp).toLocaleTimeString("fa-IR", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </span>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+          <div className={styles.chatInputContainer}>
+            <input
+              type="text"
+              className={styles.chatInput}
+              placeholder="پیام خود را بنویسید..."
+              value={chatInput}
+              onChange={(e) => setChatInput(e.target.value)}
+              onKeyPress={(e) => {
+                if (e.key === "Enter") {
+                  handleSendChatMessage();
+                }
+              }}
+            />
+            <button
+              className={styles.chatSendButton}
+              onClick={handleSendChatMessage}
+              disabled={!chatInput.trim()}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </CenterModal>
+
+      <Notification
+        show={notification.show}
+        message={notification.message}
+        type={notification.type}
+        onClose={hideNotification}
+      />
     </div>
   );
 }
-

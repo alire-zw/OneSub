@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import PaymentFailedIcon from "@/components/icons/PaymentFailedIcon";
@@ -55,8 +55,16 @@ const formatPrice = (price: number): string => {
 };
 
 // تابع formatDate
-const formatDate = (dateString: string): string => {
+const formatDate = (dateString: string | null | undefined): string => {
+  if (!dateString) return 'نامشخص';
+  
   const date = new Date(dateString);
+  
+  // بررسی معتبر بودن تاریخ
+  if (isNaN(date.getTime()) || !isFinite(date.getTime())) {
+    return 'نامشخص';
+  }
+  
   return new Intl.DateTimeFormat('fa-IR', {
     year: 'numeric',
     month: 'long',
@@ -66,7 +74,7 @@ const formatDate = (dateString: string): string => {
   }).format(date);
 };
 
-export default function PurchaseFailedPage() {
+function PurchaseFailedPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const orderNumber = searchParams?.get("orderNumber");
@@ -173,7 +181,7 @@ export default function PurchaseFailedPage() {
 
             {/* باکس اطلاعات محصول */}
             {orderData.product && (
-              <div className={buyPageStyles.productBox} style={{ marginTop: '-8px', marginBottom: '24px', width: '100%', maxWidth: '100%' }}>
+              <div className={buyPageStyles.productBox} style={{ marginTop: '-16px', marginBottom: '24px', width: '100%', maxWidth: '100%' }}>
                 {orderData.product.imagePath ? (
                   <div className={buyPageStyles.productImageContainer}>
                     <img
@@ -245,6 +253,20 @@ export default function PurchaseFailedPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function PurchaseFailedPage() {
+  return (
+    <Suspense fallback={
+      <div className={buyPageStyles.container}>
+        <div className={buyPageStyles.loadingContainer}>
+          <div className={buyPageStyles.loadingSpinner}></div>
+        </div>
+      </div>
+    }>
+      <PurchaseFailedPageContent />
+    </Suspense>
   );
 }
 

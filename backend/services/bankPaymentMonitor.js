@@ -1,6 +1,9 @@
 const mysql = require('../database/mysql');
 const zibalService = require('./zibalService');
 const { refreshUserCache } = require('../utils/userCache');
+const telegramBot = require('./telegramBot');
+const smsService = require('./smsService');
+const notificationService = require('./notificationService');
 
 let monitoringTimeout = null;
 
@@ -24,7 +27,9 @@ const checkPendingBankPayments = async () => {
         t.paymentType,
         t.status,
         t.description,
-        t.createdAt
+        t.createdAt,
+        t.cardNumber,
+        t.refNumber
       FROM transactions t
       WHERE t.paymentType = 'zibal'
       AND t.status = 'pending'
@@ -72,9 +77,78 @@ const checkPendingBankPayments = async () => {
               `;
               await mysql.query(updateOrderQuery, [payment.orderId]);
               console.log(`[Bank Payment Monitor] Order ${payment.orderId} completed via payment verification`);
+
+              // ارسال نوتیفیکیشن‌ها و گزارش ادمین
+              try {
+                const telegramBot = require('./telegramBot');
+                const notificationService = require('./notificationService');
+                
+                // دریافت اطلاعات سفارش و محصول
+                const orderQuery = `
+                  SELECT o.*, p.productName 
+                  FROM orders o
+                  LEFT JOIN products p ON o.productId = p.id
+                  WHERE o.orderNumber = ?
+                `;
+                const orders = await mysql.query(orderQuery, [payment.orderId]);
+                
+                if (orders && orders.length > 0) {
+                  const orderData = orders[0];
+                  const productName = orderData.productName || 'نامشخص';
+                  // استفاده از order.amount که به صورت صحیح ذخیره شده (تومان برای online و wallet)
+                  let amountInToman;
+                  if (orderData.paymentMethod === 'crypto') {
+                    amountInToman = Math.floor(orderData.amount / 10); // تبدیل از ریال به تومان
+                  } else {
+                    amountInToman = orderData.amount; // به صورت تومان ذخیره شده
+                  }
+
+                  // دریافت اطلاعات کاربر
+                  const userQuery = 'SELECT telegramID, phoneNumber FROM users WHERE id = ?';
+                  const users = await mysql.query(userQuery, [payment.userId]);
+                  
+                  if (users && users.length > 0) {
+                    const user = users[0];
+
+                    // ارسال نوتیفیکیشن تلگرام
+                    if (user.telegramID) {
+                      await telegramBot.sendOrderCompletionNotification(
+                        user.telegramID,
+                        payment.orderId,
+                        productName,
+                        amountInToman
+                      );
+                    }
+
+                    // ایجاد نوتیفیکیشن درون اپ
+                    const frontendUrl = process.env.FRONTEND_URL || 'https://osf.mirall.ir';
+                    await notificationService.createNotification(
+                      payment.userId,
+                      'order',
+                      'خرید شما موفق بود',
+                      `سفارش شما با شماره ${payment.orderId} با موفقیت ثبت و پرداخت شد.\n\n🛍️ محصول: ${productName}\n💵 مبلغ: ${amountInToman.toLocaleString('fa-IR')} تومان\n\n✅ پس از تایید توسط کارشناسان ما، وضعیت سفارش شما تغییر خواهد کرد و محصول به شما تحویل داده خواهد شد.`,
+                      `${frontendUrl}/dashboard`
+                    );
+
+                    // ارسال گزارش ادمین
+                    await telegramBot.sendAdminOrderReport(
+                      payment.userId,
+                      payment.orderId,
+                      productName,
+                      amountInToman,
+                      'OnlineGateway',
+                      null
+                    );
+                  }
+                }
+              } catch (error) {
+                console.error(`[Bank Payment Monitor] Error sending order completion notifications:`, error);
+              }
             } else if (!payment.orderId || !payment.orderId.startsWith('OS')) {
               // This is a wallet charge, update wallet balance
               const amountInRial = payment.amount; // Already in Rial
+              const amountInToman = Math.floor(amountInRial / 10); // Convert to Toman for display
+              
               const updateWalletQuery = `
                 UPDATE users 
                 SET walletBalance = walletBalance + ? 
@@ -82,6 +156,73 @@ const checkPendingBankPayments = async () => {
               `;
               await mysql.query(updateWalletQuery, [amountInRial, payment.userId]);
               console.log(`[Bank Payment Monitor] Wallet charged for user ${payment.userId}`);
+
+              // Get user data for notifications
+              const userQuery = `SELECT telegramID, phoneNumber FROM users WHERE id = ?`;
+              const users = await mysql.query(userQuery, [payment.userId]);
+              
+              // Get user's SHABA number from cards (first card with SHABA)
+              let userShabaNumber = null;
+              try {
+                const shabaQuery = `SELECT shebaNumber FROM cards WHERE userId = ? AND shebaNumber IS NOT NULL AND shebaNumber != '' LIMIT 1`;
+                const shabaResult = await mysql.query(shabaQuery, [payment.userId]);
+                if (shabaResult && shabaResult.length > 0) {
+                  userShabaNumber = shabaResult[0].shebaNumber;
+                }
+              } catch (error) {
+                console.error(`[Bank Payment Monitor] Error fetching user SHABA:`, error);
+              }
+              
+              if (users && users.length > 0) {
+                const user = users[0];
+                
+                // Send Telegram notification if user has telegramID
+                if (user.telegramID) {
+                  try {
+                    await telegramBot.sendWalletChargeNotification(user.telegramID, amountInToman, userShabaNumber);
+                  } catch (error) {
+                    console.error(`[Bank Payment Monitor] Error sending Telegram notification:`, error);
+                  }
+                }
+                
+                // Send SMS notification if user has phoneNumber
+                if (user.phoneNumber) {
+                  try {
+                    await smsService.sendWalletChargeSMS(user.phoneNumber, amountInToman);
+                  } catch (error) {
+                    console.error(`[Bank Payment Monitor] Error sending SMS notification:`, error);
+                  }
+                }
+                
+                  // Create in-app notification
+                  try {
+                    const frontendUrl = process.env.FRONTEND_URL || 'https://osf.mirall.ir';
+                    await notificationService.createNotification(
+                      payment.userId,
+                      'wallet_charge',
+                      'شارژ موفق کیف پول',
+                      `مبلغ ${amountInToman.toLocaleString('fa-IR')} تومان با موفقیت به کیف پول شما افزوده شد.`,
+                      `${frontendUrl}/shop`
+                    );
+                  } catch (error) {
+                    console.error(`[Bank Payment Monitor] Error creating in-app notification:`, error);
+                  }
+
+                  // Send admin channel report
+                  try {
+                    console.log(`[Bank Payment Monitor] Sending admin report for user ${payment.userId}, amount: ${amountInToman}`);
+                    const adminReportResult = await telegramBot.sendAdminChargeReport(
+                      payment.userId,
+                      amountInToman,
+                      'OnlineGateway',
+                      userShabaNumber,
+                      null
+                    );
+                    console.log(`[Bank Payment Monitor] Admin report result:`, adminReportResult);
+                  } catch (error) {
+                    console.error(`[Bank Payment Monitor] Error sending admin report:`, error);
+                  }
+              }
             }
 
             // Refresh user cache
@@ -121,6 +262,11 @@ const checkPendingBankPayments = async () => {
       } catch (error) {
         console.error(`[Bank Payment Monitor] Error checking payment ${payment.transactionId}:`, error);
       }
+    }
+    
+    const count = pendingPayments?.length || 0;
+    if (count > 0) {
+      console.log(`[Bank Payment Monitor] ✓ Checked ${count} pending payment(s)`);
     }
   } catch (error) {
     console.error('[Bank Payment Monitor] Error in checkPendingBankPayments:', error);

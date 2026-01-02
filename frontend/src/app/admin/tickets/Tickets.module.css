@@ -1,0 +1,250 @@
+.container {
+  width: 100%;
+  min-height: 100vh;
+  background: var(--card-background);
+  padding-bottom: 80px;
+  font-family: "OneBitIranYekan", Arial, Helvetica, sans-serif;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.container::-webkit-scrollbar {
+  display: none;
+}
+
+.content {
+  padding: 20px var(--page-padding-x);
+}
+
+/* فیلترها */
+.filters {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding: 16px;
+  background: var(--background-secondary);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filterLabel {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--foreground);
+}
+
+.filterButtons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filterButton {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 400;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid var(--border);
+  background: var(--card-background);
+  color: var(--foreground);
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.filterButton:hover {
+  background: var(--hover);
+}
+
+.filterButtonActive {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.filterButtonActive:hover {
+  background: var(--primary-hover);
+}
+
+/* لیست تیکت‌ها */
+.ticketsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: var(--background-secondary);
+  border-radius: 8px;
+  padding: 8px;
+  border: 1px solid var(--border);
+}
+
+.ticketItem {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+  transition: background 0.2s;
+  background: var(--card-background);
+  border-radius: 8px;
+  padding: 12px;
+  gap: 12px;
+}
+
+.ticketItemStart {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.ticketImage {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+}
+
+.ticketImageImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ticketContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.ticketHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.ticketSubject {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--foreground);
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+}
+
+.ticketBadges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ticketTypeBadge {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: var(--background-secondary);
+  color: var(--foreground-secondary);
+  border: 1px solid var(--border);
+}
+
+.statusBadge {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: var(--background-secondary);
+}
+
+.ticketInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--foreground-secondary);
+  flex-wrap: wrap;
+}
+
+.ticketUser {
+  font-weight: 500;
+}
+
+.ticketSeparator {
+  opacity: 0.5;
+}
+
+.ticketOrder {
+  color: var(--foreground-muted);
+}
+
+.ticketMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 11px;
+  color: var(--foreground-muted);
+  flex-wrap: wrap;
+}
+
+.ticketDate {
+  flex: 1;
+  min-width: 0;
+}
+
+.ticketMessages {
+  flex-shrink: 0;
+}
+
+.ticketItemEnd {
+  flex-shrink: 0;
+  color: var(--foreground-muted);
+  display: flex;
+  align-items: center;
+}
+
+.menuDivider {
+  height: 1px;
+  background: var(--border);
+  margin: 4px 0;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.emptyIcon {
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.emptyText {
+  font-size: 14px;
+  color: var(--foreground-muted);
+  margin: 0;
+}
+

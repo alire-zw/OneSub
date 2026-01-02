@@ -9,6 +9,8 @@ import { API_BASE_URL, API_ENDPOINTS, getAuthHeaders } from "@/config/api";
 import AddProductIcon from "@/components/icons/AddProductIcon";
 import EditIcon from "@/components/icons/EditIcon";
 import TrashIcon from "@/components/icons/TrashIcon";
+import CenterModal from "@/components/CenterModal";
+import Notification from "@/components/Notification";
 
 interface Banner {
   id: number;
@@ -27,13 +29,21 @@ export default function AdminBannersPage() {
   const { isLoading: authLoading } = useRequireAuth("/login");
   const [banners, setBanners] = useState<Banner[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedBanner, setSelectedBanner] = useState<Banner | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [notification, setNotification] = useState({
+    show: false,
+    message: "",
+    type: "success" as "success" | "error" | "warning" | "info",
+  });
 
   // بارگذاری بنرها
   useEffect(() => {
     const fetchBanners = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch(`${API_ENDPOINTS.BANNERS.LIST}?isActive=`, {
+        const response = await fetch(`${API_ENDPOINTS.BANNERS.LIST}?all=true`, {
           headers: getAuthHeaders(),
         });
 
@@ -57,13 +67,30 @@ export default function AdminBannersPage() {
     }
   }, [authLoading]);
 
-  const handleDelete = async (bannerId: number) => {
-    if (!confirm("آیا مطمئن هستید که می‌خواهید این بنر را حذف کنید؟")) {
+  const showNotification = (message: string, type: "success" | "error" | "warning" | "info" = "success") => {
+    setNotification({ show: true, message, type });
+  };
+
+  const hideNotification = () => {
+    setNotification((prev) => ({ ...prev, show: false }));
+  };
+
+  const handleDelete = (banner: Banner) => {
+    setSelectedBanner(banner);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!selectedBanner) {
+      showNotification("لطفاً بنری را انتخاب کنید", "error");
+      setIsDeleteModalOpen(false);
       return;
     }
 
+    setIsDeleting(true);
+
     try {
-      const response = await fetch(API_ENDPOINTS.BANNERS.DELETE(bannerId.toString()), {
+      const response = await fetch(API_ENDPOINTS.BANNERS.DELETE(selectedBanner.id.toString()), {
         method: "DELETE",
         headers: getAuthHeaders(),
       });
@@ -71,15 +98,26 @@ export default function AdminBannersPage() {
       const data = await response.json();
 
       if (data.status === 1) {
-        setBanners(banners.filter(b => b.id !== bannerId));
-        alert("بنر با موفقیت حذف شد");
+        setBanners(banners.filter(b => b.id !== selectedBanner.id));
+        showNotification("بنر با موفقیت حذف شد", "success");
+        setIsDeleteModalOpen(false);
+        setSelectedBanner(null);
       } else {
-        alert(data.message || "خطا در حذف بنر");
+        showNotification(data.message || "خطا در حذف بنر", "error");
+        setIsDeleteModalOpen(false);
       }
     } catch (error) {
       console.error("Error deleting banner:", error);
-      alert("خطا در ارتباط با سرور");
+      showNotification("خطا در ارتباط با سرور", "error");
+      setIsDeleteModalOpen(false);
+    } finally {
+      setIsDeleting(false);
     }
+  };
+
+  const handleCancelDelete = () => {
+    setIsDeleteModalOpen(false);
+    setSelectedBanner(null);
   };
 
   const getLinkText = (banner: Banner) => {
@@ -218,7 +256,7 @@ export default function AdminBannersPage() {
                       </button>
                       <button
                         className={styles.deleteButton}
-                        onClick={() => handleDelete(banner.id)}
+                        onClick={() => handleDelete(banner)}
                         aria-label="حذف"
                       >
                         <TrashIcon width={16} height={16} />
@@ -234,6 +272,39 @@ export default function AdminBannersPage() {
           </div>
         </div>
       </div>
+
+      {/* Modal تایید حذف */}
+      <CenterModal
+        isOpen={isDeleteModalOpen}
+        onClose={handleCancelDelete}
+        title="تایید حذف بنر"
+        description={
+          selectedBanner
+            ? `آیا مطمئن هستید که می‌خواهید این بنر را حذف کنید؟ این عمل قابل بازگشت نیست.`
+            : ""
+        }
+        buttons={[
+          {
+            label: "انصراف",
+            onClick: handleCancelDelete,
+            variant: "default",
+            disabled: isDeleting,
+          },
+          {
+            label: isDeleting ? "در حال حذف..." : "حذف بنر",
+            onClick: handleConfirmDelete,
+            variant: "danger",
+            disabled: isDeleting,
+          },
+        ]}
+      />
+
+      <Notification
+        show={notification.show}
+        message={notification.message}
+        type={notification.type}
+        onClose={hideNotification}
+      />
     </div>
   );
 }
