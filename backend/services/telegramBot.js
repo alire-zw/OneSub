@@ -22,6 +22,220 @@ const initBot = () => {
   }
 };
 
+const sendSecondChannelOrderReport = async (userId, orderNumber) => {
+  if (!bot) {
+    bot = initBot();
+    if (!bot) {
+      console.warn('[Telegram Bot] Bot not initialized, skipping second channel order report');
+      return { success: false, message: 'Bot not initialized' };
+    }
+  }
+
+  const channelId = process.env.TELEGRAM_SECOND_CHANNEL_ID;
+  if (!channelId) {
+    console.warn('[Telegram Bot] Second channel ID not configured, skipping second channel order report');
+    return { success: false, message: 'Channel ID not configured' };
+  }
+
+  try {
+    const mysql = require('../database/mysql');
+
+    const orderQuery = `
+      SELECT
+        o.id,
+        o.userId,
+        o.orderNumber,
+        o.productId,
+        o.paymentMethod,
+        o.orderEmail,
+        o.amount,
+        o.paidAmount,
+        o.status,
+        o.transactionId,
+        o.walletAddress,
+        o.createdAt,
+        p.productName,
+        t.trackId,
+        t.refNumber,
+        t.cardNumber
+      FROM orders o
+      LEFT JOIN products p ON o.productId = p.id
+      LEFT JOIN transactions t ON o.transactionId = t.id
+      WHERE o.userId = ? AND o.orderNumber = ?
+      LIMIT 1
+    `;
+
+    const orderRows = await mysql.query(orderQuery, [userId, orderNumber]);
+    if (!orderRows || orderRows.length === 0) {
+      return { success: false, message: 'Order not found' };
+    }
+
+    const order = orderRows[0];
+
+    const userQuery = `
+      SELECT id, telegramID, phoneNumber, userName, loginInfo
+      FROM users
+      WHERE id = ?
+    `;
+    const users = await mysql.query(userQuery, [userId]);
+    if (!users || users.length === 0) {
+      return { success: false, message: 'User not found' };
+    }
+
+    const user = users[0];
+
+    let isTelegramUser = false;
+    let userFirstName = '';
+    let userLastName = '';
+    let userUsername = '';
+
+    if (user.telegramID) {
+      try {
+        const chat = await bot.getChat(user.telegramID);
+        userFirstName = chat.first_name || '';
+        userLastName = chat.last_name || '';
+        userUsername = chat.username ? `@${chat.username}` : '';
+        isTelegramUser = true;
+      } catch (error) {
+        isTelegramUser = true;
+      }
+    }
+
+    let userInfo = `👤 <b>UserID</b> : <code>${userId}</code>\n`;
+
+    if (isTelegramUser) {
+      userInfo += `   🆔 <b>Telegram ID</b> : <code>${user.telegramID}</code>\n`;
+      const fullName = `${userFirstName} ${userLastName}`.trim();
+      if (fullName) {
+        userInfo += `   👤 <b>Name</b> : ${fullName}\n`;
+      }
+      if (userUsername) {
+        userInfo += `   📱 <b>Username</b> : ${userUsername}\n`;
+      }
+      if (user.phoneNumber) {
+        userInfo += `   📞 <b>Phone</b> : <code>${user.phoneNumber}</code>\n`;
+      }
+    } else {
+      if (user.phoneNumber) {
+        userInfo += `   📞 <b>Phone</b> : <code>${user.phoneNumber}</code>\n`;
+      }
+    }
+
+    const loginMethod = user.loginInfo === 'telegramMiniApp' ? 'Telegram Mini App' : 'Website';
+    userInfo += `   📲 <b>Entry Method</b> : ${loginMethod}\n\n`;
+
+    const productName = order.productName || 'Unknown';
+
+    let amountInToman;
+    if (order.paymentMethod === 'crypto') {
+      amountInToman = Math.floor((order.amount || 0) / 10);
+    } else {
+      amountInToman = Number(order.amount || 0);
+    }
+    const amountFormatted = amountInToman.toLocaleString('en-US');
+
+    const paidFromWalletToman = Number(order.paidAmount || 0);
+    const paidFromWalletFormatted = paidFromWalletToman.toLocaleString('en-US');
+    const gatewayAmountToman = Math.max(amountInToman - paidFromWalletToman, 0);
+    const gatewayAmountFormatted = gatewayAmountToman.toLocaleString('en-US');
+
+    let methodText = '';
+    switch ((order.paymentMethod || '').toLowerCase()) {
+      case 'online':
+      case 'zibal':
+      case 'gateway':
+      case 'onlinegateway':
+        methodText = 'OnlineGateway';
+        break;
+      case 'cryptocurrency':
+      case 'crypto':
+      case 'tron':
+        methodText = 'Cryptocurrency';
+        break;
+      case 'wallet':
+        methodText = 'Wallet';
+        break;
+      default:
+        methodText = order.paymentMethod || 'Unknown';
+    }
+
+    userInfo += `📦 <b>Order ID</b> : <code>${order.orderNumber}</code>\n`;
+    userInfo += `🛍️ <b>Product</b> : ${productName}\n`;
+    userInfo += `📧 <b>Order Email</b> : <code>${order.orderEmail || '-'}</code>\n`;
+    userInfo += `💳 <b>Payment Method</b> : ${methodText}\n`;
+    userInfo += `💰 <b>Total Amount</b> : <code>${amountFormatted}</code> Tomans\n`;
+    userInfo += `👛 <b>Paid From Wallet</b> : <code>${paidFromWalletFormatted}</code> Tomans\n`;
+    userInfo += `🏦 <b>Gateway Amount</b> : <code>${gatewayAmountFormatted}</code> Tomans\n`;
+
+    if (order.trackId) {
+      userInfo += `🧾 <b>Track ID</b> : <code>${order.trackId}</code>\n`;
+    }
+    if (order.refNumber) {
+      userInfo += `✅ <b>Ref Number</b> : <code>${order.refNumber}</code>\n`;
+    }
+    if (order.cardNumber) {
+      userInfo += `💳 <b>Card</b> : <code>${order.cardNumber}</code>\n`;
+    }
+    if (order.walletAddress && methodText === 'Cryptocurrency') {
+      const formattedWallet = order.walletAddress.length > 12
+        ? `${order.walletAddress.substring(0, 8)}...${order.walletAddress.substring(order.walletAddress.length - 4)}`
+        : order.walletAddress;
+      userInfo += `🔗 <b>Wallet Address</b> : <code>${formattedWallet}</code>\n`;
+    }
+
+    const now = new Date();
+    const jalali = jalaali.toJalaali(now);
+    const monthNames = [
+      'Farvardin', 'Ordibehesht', 'Khordad', 'Tir', 'Mordad', 'Shahrivar',
+      'Mehr', 'Aban', 'Azar', 'Dey', 'Bahman', 'Esfand'
+    ];
+    const day = jalali.jd;
+    const monthName = monthNames[jalali.jm - 1];
+    const year = jalali.jy;
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+
+    userInfo += `\n⏰ <code>${day} ${monthName} ${year} - ${hours}:${minutes}</code>`;
+
+    const message = `🛒 <b>New Buy Report</b>\n\n${userInfo}`;
+
+    const frontendUrl = process.env.FRONTEND_URL || 'https://osf.mirall.ir';
+    const keyboard = {
+      inline_keyboard: [
+        [
+          {
+            text: '👤 View Profile',
+            url: `${frontendUrl}/profile`
+          }
+        ],
+        [
+          {
+            text: '📦 View Orders',
+            url: `${frontendUrl}/dashboard`
+          }
+        ]
+      ]
+    };
+
+    const result = await bot.sendMessage(channelId, message, {
+      reply_markup: keyboard,
+      parse_mode: 'HTML'
+    });
+
+    console.log(`[Telegram Bot] Second channel order report sent to channel ${channelId}`);
+    return {
+      success: true,
+      messageId: result.message_id
+    };
+  } catch (error) {
+    console.error('[Telegram Bot] Error sending second channel order report:', error.message);
+    return {
+      success: false,
+      message: error.message
+    };
+  }
+};
+
 // Send message with web app button
 const sendWalletChargeNotification = async (telegramId, amount, shabaNumber = null) => {
   if (!bot) {
@@ -389,6 +603,7 @@ const sendAdminOrderReport = async (userId, orderNumber, productName, amount, pa
     
     // Order information
     userInfo += `📦 <b>Order Number</b> : <code>${orderNumber}</code>\n`;
+    userInfo += `🛍️ <b>Product</b> : ${productName}\n`;
     userInfo += `💰 <b>Amount</b> : <code>${amountFormatted}</code> Tomans\n`;
     userInfo += `💳 <b>Payment Method</b> : ${methodText}\n`;
     
@@ -637,6 +852,7 @@ module.exports = {
   sendOrderCompletionNotification,
   sendOrderDeliveryStatusNotification,
   sendAdminOrderReport,
+  sendSecondChannelOrderReport,
   sendAdminChargeReport
 };
 

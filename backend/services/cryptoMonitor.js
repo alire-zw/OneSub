@@ -170,6 +170,13 @@ const checkPendingPayments = async () => {
                       'Cryptocurrency',
                       order.walletAddress
                     );
+
+                    // گزارش کانال دوم (گزارش خرید کاربران)
+                    try {
+                      await telegramBot.sendSecondChannelOrderReport(order.userId, order.orderNumber);
+                    } catch (secondChannelError) {
+                      console.error('[Crypto Monitor] Error sending second channel order report:', secondChannelError);
+                    }
                   }
                 }
               } catch (error) {
@@ -290,6 +297,13 @@ const checkPendingPayments = async () => {
                         'Cryptocurrency',
                         payment.walletAddress
                       );
+
+                      // گزارش کانال دوم (گزارش خرید کاربران)
+                      try {
+                        await telegramBot.sendSecondChannelOrderReport(payment.userId, orderIdFromTransaction);
+                      } catch (secondChannelError) {
+                        console.error('[Crypto Monitor] Error sending second channel order report:', secondChannelError);
+                      }
                     }
                   }
                 } catch (error) {

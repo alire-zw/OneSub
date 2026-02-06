@@ -17,7 +17,9 @@ export function generatePageMetadata(options: PageMetadataOptions = {}): Metadat
   
   const pageTitle = title ? `${SITE_NAME} | ${title}` : SITE_NAME;
   const pageDescription = description || DEFAULT_DESCRIPTION;
-  const pageImage = image ? `${SITE_URL}${image}` : `${SITE_URL}/logo.webp`;
+  const pageImage = image 
+    ? (image.startsWith("http") ? image : `${SITE_URL}${image}`)
+    : `${SITE_URL}/logo.webp`;
   const pageImageAlt = imageAlt || `${SITE_NAME} لوگو`;
 
   return {

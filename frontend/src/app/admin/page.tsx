@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
+import { API_ENDPOINTS, getAuthHeaders } from "@/config/api";
 import styles from "./Admin.module.css";
 import ShopIcon from "@/components/icons/ShopIcon";
 import OrderIcon from "@/components/icons/OrderIcon";
@@ -34,6 +35,37 @@ export default function AdminPanelPage() {
   const router = useRouter();
   const { user, isLoading } = useAuth();
   const [shouldRedirect, setShouldRedirect] = useState(false);
+  const [stats, setStats] = useState({
+    pendingOrders: 0,
+    processingOrders: 0,
+    completedOrders: 0,
+  });
+  const [statsLoading, setStatsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      if (isLoading || !user || user.role?.toLowerCase() !== "admin") return;
+      
+      try {
+        const response = await fetch(API_ENDPOINTS.ORDERS.ADMIN.STATS, {
+          headers: getAuthHeaders(),
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data.status === 1 && data.data) {
+            setStats(data.data);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching stats:", error);
+      } finally {
+        setStatsLoading(false);
+      }
+    };
+    
+    fetchStats();
+  }, [user, isLoading]);
 
   useEffect(() => {
     // اگر کاربر ادمین نبود، به صفحه قبلی برگردان
@@ -170,13 +202,6 @@ export default function AdminPanelPage() {
     router.push(href);
   };
 
-  // داده‌های آماری (موقت - بعداً از API می‌آید)
-  const stats = {
-    pendingOrders: 12,
-    processingOrders: 8,
-    completedOrders: 45,
-  };
-
   return (
     <div className={styles.container}>
       {/* Header */}
@@ -197,7 +222,7 @@ export default function AdminPanelPage() {
                   </div>
                   سفارشات در انتظار تایید امروز
                 </div>
-                <div className={styles.statValue}>{stats.pendingOrders}</div>
+                <div className={styles.statValue}>{statsLoading ? "..." : stats.pendingOrders}</div>
               </div>
             </div>
           </div>
@@ -210,7 +235,7 @@ export default function AdminPanelPage() {
                   </div>
                   سفارشات در حال انجام امروز
                 </div>
-                <div className={styles.statValue}>{stats.processingOrders}</div>
+                <div className={styles.statValue}>{statsLoading ? "..." : stats.processingOrders}</div>
               </div>
             </div>
           </div>
@@ -224,7 +249,7 @@ export default function AdminPanelPage() {
                 </div>
                 سفارشات تکمیل شده امروز
               </div>
-              <div className={styles.statValue}>{stats.completedOrders}</div>
+              <div className={styles.statValue}>{statsLoading ? "..." : stats.completedOrders}</div>
             </div>
           </div>
         </div>

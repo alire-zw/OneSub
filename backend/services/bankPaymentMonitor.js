@@ -139,6 +139,13 @@ const checkPendingBankPayments = async () => {
                       'OnlineGateway',
                       null
                     );
+
+                    // گزارش کانال دوم (گزارش خرید کاربران)
+                    try {
+                      await telegramBot.sendSecondChannelOrderReport(payment.userId, payment.orderId);
+                    } catch (secondChannelError) {
+                      console.error('[Bank Payment Monitor] Error sending second channel order report:', secondChannelError);
+                    }
                   }
                 }
               } catch (error) {

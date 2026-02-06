@@ -57,6 +57,7 @@ export const API_ENDPOINTS = {
     GET: (orderNumber: string) => `${API_BASE_URL}/api/orders/${orderNumber}`,
     ADMIN: {
       ALL: `${API_BASE_URL}/api/orders/admin/all`,
+      STATS: `${API_BASE_URL}/api/orders/admin/stats/today`,
       GET: (id: string | number) => `${API_BASE_URL}/api/orders/admin/${id}`,
       UPDATE_DELIVERY_STATUS: (id: string | number) => `${API_BASE_URL}/api/orders/admin/${id}/delivery-status`,
     },

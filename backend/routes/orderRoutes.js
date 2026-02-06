@@ -177,6 +177,13 @@ router.post('/purchase-with-wallet', authenticate, generalRateLimiter, async (re
       } catch (adminReportError) {
         console.error('[Order Routes] Error sending admin order report:', adminReportError);
       }
+
+      // گزارش کانال دوم (گزارش خرید کاربران)
+      try {
+        await telegramBot.sendSecondChannelOrderReport(userId, orderNumber);
+      } catch (secondChannelError) {
+        console.error('[Order Routes] Error sending second channel order report:', secondChannelError);
+      }
     } catch (error) {
       console.error('[Order Routes] Error sending order notifications:', error);
     }
@@ -537,6 +544,8 @@ router.get('/callback', async (req, res) => {
 
     // پیدا کردن سفارش مرتبط
     const orderNumber = orderId ? orderId.replace('ORD-', '') : null;
+    console.log(`[Order Callback] Looking for order - Transaction ID: ${transaction.id}, Order Number: ${orderNumber}, Track ID: ${trackIdNum}`);
+    
     let orderQuery = 'SELECT * FROM orders WHERE transactionId = ?';
     let orderParams = [transaction.id];
     
@@ -545,34 +554,46 @@ router.get('/callback', async (req, res) => {
       orderParams = [orderNumber, transaction.id];
     }
 
+    console.log(`[Order Callback] Query: ${orderQuery}, Params: ${JSON.stringify(orderParams)}`);
     const orders = await mysql.query(orderQuery, orderParams);
+    console.log(`[Order Callback] Found ${orders.length} orders`);
     
     if (orders.length === 0) {
+      console.log(`[Order Callback] Order not found for Transaction ID: ${transaction.id}, Order Number: ${orderNumber}`);
       return res.status(404).send('Order not found');
     }
 
     const order = orders[0];
+    console.log(`[Order Callback] Found order: ${JSON.stringify({id: order.id, orderNumber: order.orderNumber, status: order.status, paymentMethod: order.paymentMethod})}`);
 
     if (verifyResult.success) {
-      if (transaction.status === 'pending' && order.status === 'pending') {
-        // به‌روزرسانی transaction
-        const updateTransactionQuery = `
-          UPDATE transactions 
-          SET status = 'completed', 
-              refNumber = ?, 
-              cardNumber = ?, 
-              paidAt = ?,
-              description = ?
-          WHERE trackId = ?
-        `;
+      console.log(`[Order Callback] Payment successful - Transaction status: ${transaction.status}, Order status: ${order.status}`);
+      if (order.status === 'pending') {
+        console.log(`[Order Callback] Updating order ${order.id} to completed status`);
         
-        await mysql.query(updateTransactionQuery, [
-          verifyResult.refNumber,
-          verifyResult.cardNumber,
-          verifyResult.paidAt ? new Date(verifyResult.paidAt) : new Date(),
-          verifyResult.description || transaction.description,
-          trackIdNum
-        ]);
+        // به‌روزرسانی transaction (فقط اگر وضعیت هنوز pending بود)
+        if (transaction.status === 'pending') {
+          const updateTransactionQuery = `
+            UPDATE transactions 
+            SET status = 'completed', 
+                refNumber = ?, 
+                cardNumber = ?, 
+                paidAt = ?,
+                description = ?
+            WHERE trackId = ?
+          `;
+          
+          await mysql.query(updateTransactionQuery, [
+            verifyResult.refNumber,
+            verifyResult.cardNumber,
+            verifyResult.paidAt ? new Date(verifyResult.paidAt) : new Date(),
+            verifyResult.description || transaction.description,
+            trackIdNum
+          ]);
+          console.log(`[Order Callback] Transaction ${transaction.id} updated to completed`);
+        } else {
+          console.log(`[Order Callback] Transaction ${transaction.id} already processed with status: ${transaction.status}, skipping transaction update`);
+        }
 
         // به‌روزرسانی سفارش
         const updateOrderQuery = `
@@ -583,6 +604,7 @@ router.get('/callback', async (req, res) => {
         `;
         
         await mysql.query(updateOrderQuery, [order.id]);
+        console.log(`[Order Callback] Order ${order.orderNumber} updated to completed successfully`);
 
         // به‌روزرسانی cache کاربر
         await refreshUserCache(order.userId);
@@ -636,6 +658,13 @@ router.get('/callback', async (req, res) => {
               'OnlineGateway',
               null
             );
+
+            // گزارش کانال دوم (گزارش خرید کاربران)
+            try {
+              await telegramBot.sendSecondChannelOrderReport(order.userId, order.orderNumber);
+            } catch (secondChannelError) {
+              console.error('[Order Callback] Error sending second channel order report:', secondChannelError);
+            }
           }
         } catch (error) {
           console.error('[Order Callback] Error sending completion notifications:', error);
@@ -645,18 +674,27 @@ router.get('/callback', async (req, res) => {
       const redirectUrl = `${FRONTEND_URL}/shop/product/${order.productId}/buy/success?orderNumber=${order.orderNumber}`;
       res.redirect(redirectUrl);
     } else {
-      if (transaction.status === 'pending') {
-        const updateTransactionQuery = `
-          UPDATE transactions 
-          SET status = 'failed',
-              description = ?
-          WHERE trackId = ?
-        `;
+      console.log(`[Order Callback] Payment failed - Transaction status: ${transaction.status}, Order status: ${order.status}`);
+      if (order.status === 'pending') {
+        console.log(`[Order Callback] Updating order ${order.id} to failed status`);
         
-        await mysql.query(updateTransactionQuery, [
-          verifyResult.message || 'Payment verification failed',
-          trackIdNum
-        ]);
+        // به‌روزرسانی transaction (فقط اگر وضعیت هنوز pending بود)
+        if (transaction.status === 'pending') {
+          const updateTransactionQuery = `
+            UPDATE transactions 
+            SET status = 'failed',
+                description = ?
+            WHERE trackId = ?
+          `;
+          
+          await mysql.query(updateTransactionQuery, [
+            verifyResult.message || 'Payment verification failed',
+            trackIdNum
+          ]);
+          console.log(`[Order Callback] Transaction ${transaction.id} updated to failed`);
+        } else {
+          console.log(`[Order Callback] Transaction ${transaction.id} already processed with status: ${transaction.status}, skipping transaction update`);
+        }
 
         // به‌روزرسانی سفارش
         const updateOrderQuery = `
@@ -666,6 +704,30 @@ router.get('/callback', async (req, res) => {
         `;
         
         await mysql.query(updateOrderQuery, [order.id]);
+        console.log(`[Order Callback] Order ${order.orderNumber} updated to failed successfully`);
+
+        // اگر از موجودی کیف پول استفاده شده بود، آن را برگردانیم
+        if (order.paidAmount > 0) {
+          console.log(`[Order Callback] Restoring wallet balance - Paid amount: ${order.paidAmount}, User ID: ${order.userId}`);
+          
+          const restoreWalletQuery = `
+            UPDATE users 
+            SET walletBalance = walletBalance + ? 
+            WHERE id = ?
+          `;
+          
+          const amountInRial = order.paidAmount * 10;
+          await mysql.query(restoreWalletQuery, [amountInRial, order.userId]);
+          
+          // به‌روزرسانی cache کاربر
+          await refreshUserCache(order.userId);
+          
+          console.log(`[Order Callback] Restored ${order.paidAmount} Tomans to user ${order.userId} wallet due to failed payment`);
+        } else {
+          console.log(`[Order Callback] No wallet amount to restore for order ${order.orderNumber}`);
+        }
+      } else {
+        console.log(`[Order Callback] Order ${order.orderNumber} already processed, skipping update`);
       }
 
       const redirectUrl = `${FRONTEND_URL}/shop/product/${order.productId}/buy/failed?orderNumber=${order.orderNumber}`;
@@ -704,6 +766,7 @@ router.get('/', authenticate, generalRateLimiter, async (req, res) => {
       FROM orders o
       LEFT JOIN products p ON o.productId = p.id
       WHERE o.userId = ?
+      AND o.status IN ('completed', 'processing', 'delivered')
       ORDER BY o.createdAt DESC
     `;
 
@@ -771,7 +834,7 @@ router.get('/:orderNumber', authenticate, generalRateLimiter, async (req, res) =
       FROM orders o
       LEFT JOIN products p ON o.productId = p.id
       LEFT JOIN transactions t ON o.transactionId = t.id
-      WHERE (o.orderNumber = ? OR o.id = ?) AND o.userId = ?`,
+      WHERE (o.orderNumber = ? OR o.id = ?) AND o.userId = ? AND o.status = 'completed'`,
       [orderNumber, orderNumber, userId]
     );
 
@@ -831,6 +894,59 @@ router.get('/:orderNumber', authenticate, generalRateLimiter, async (req, res) =
 
 // ============= ADMIN ROUTES =============
 
+// دریافت آمار سفارشات امروز (برای داشبورد ادمین)
+router.get('/admin/stats/today', authenticate, requireAdmin, generalRateLimiter, async (req, res) => {
+  try {
+    // 1. Pending (Received) Orders Today - سفارشات در انتظار تایید امروز
+    // deliveryStatus = 'received' AND createdAt = today
+    const pendingQuery = `
+      SELECT COUNT(*) as count 
+      FROM orders 
+      WHERE deliveryStatus = 'received' 
+      AND DATE(createdAt) = CURDATE()
+      AND status = 'completed'
+    `;
+
+    // 2. Processing Orders Today - سفارشات در حال انجام امروز
+    // deliveryStatus = 'processing' AND createdAt = today
+    // Note: We use createdAt because usually "today's processing orders" refers to orders that came in today and are being processed.
+    const processingQuery = `
+      SELECT COUNT(*) as count 
+      FROM orders 
+      WHERE deliveryStatus = 'processing' 
+      AND DATE(createdAt) = CURDATE()
+      AND status = 'completed'
+    `;
+
+    // 3. Completed Orders Today - سفارشات تکمیل شده امروز
+    // deliveryStatus = 'delivered' AND completedAt = today
+    const completedQuery = `
+      SELECT COUNT(*) as count 
+      FROM orders 
+      WHERE deliveryStatus = 'delivered' 
+      AND DATE(completedAt) = CURDATE()
+      AND status = 'completed'
+    `;
+
+    const pendingResult = await mysql.query(pendingQuery);
+    const processingResult = await mysql.query(processingQuery);
+    const completedResult = await mysql.query(completedQuery);
+
+    res.json({
+      status: 1,
+      message: 'Stats retrieved successfully',
+      data: {
+        pendingOrders: pendingResult && pendingResult[0]?.count ? Number(pendingResult[0].count) : 0,
+        processingOrders: processingResult && processingResult[0]?.count ? Number(processingResult[0].count) : 0,
+        completedOrders: completedResult && completedResult[0]?.count ? Number(completedResult[0].count) : 0
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching admin stats:', error);
+    res.status(500).json({ status: 0, message: 'Internal server error' });
+  }
+});
+
 // دریافت لیست تمام سفارشات (فقط برای ادمین)
 router.get('/admin/all', authenticate, requireAdmin, generalRateLimiter, async (req, res) => {
   try {
@@ -877,8 +993,10 @@ router.get('/admin/all', authenticate, requireAdmin, generalRateLimiter, async (
     const params = [];
     
     if (deliveryStatus) {
-      query += ' WHERE o.deliveryStatus = ?';
+      query += ' WHERE o.deliveryStatus = ? AND o.status != \'pending\'';
       params.push(deliveryStatus);
+    } else {
+      query += ' WHERE o.status != \'pending\'';
     }
     
     query += ' ORDER BY o.createdAt DESC';
