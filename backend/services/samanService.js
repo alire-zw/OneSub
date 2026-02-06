@@ -185,7 +185,7 @@ const processDeposit = async (deposit, user) => {
       // Create in-app notification
       const notificationService = require('./notificationService');
       try {
-        const frontendUrl = process.env.FRONTEND_URL || 'https://osf.mirall.ir';
+        const frontendUrl = process.env.FRONTEND_URL || 'https://onesub.ir';
         await notificationService.createNotification(
           user.userId,
           'wallet_charge',

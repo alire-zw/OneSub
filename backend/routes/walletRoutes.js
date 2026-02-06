@@ -207,7 +207,7 @@ router.get('/callback', async (req, res) => {
             
             // Create in-app notification
             try {
-              const frontendUrl = process.env.FRONTEND_URL || 'https://osf.mirall.ir';
+              const frontendUrl = process.env.FRONTEND_URL || 'https://onesub.ir';
               await notificationService.createNotification(
                 transaction.userId,
                 'wallet_charge',

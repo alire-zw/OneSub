@@ -1,5 +1,5 @@
 {
-  "csrfToken": "4e0860b9-dd06-489e-93c7-fe9e5bcc5e90",
+  "csrfToken": "0889a163-a8a2-4b0b-8640-a860c62c4889",
   "userInfo": {
     "id": "3671457",
     "cif": "5024276",
@@ -14,7 +14,7 @@
     "currentUserType": "OWNER"
   },
   "authExpiration": {
-    "sessionExpirationDate": 1770359627000,
+    "sessionExpirationDate": 1770364942000,
     "timeToIdle": 300
   },
   "passwordExpiration": {
@@ -23,9 +23,9 @@
     "countDayForExpire": "999",
     "countDayForAlertExpire": "20"
   },
-  "lastClientAddress": "193.151.140.3",
+  "lastClientAddress": "87.107.55.51",
   "twoPhaseLoginWithTicketRequired": false,
   "gender": "LEGAL",
-  "lastActivity": "2026-02-06T06:18:48.488Z",
-  "savedAt": "2026-02-06T06:18:48.488Z"
+  "lastActivity": "2026-02-06T07:53:18.997Z",
+  "savedAt": "2026-02-06T07:53:18.997Z"
 }

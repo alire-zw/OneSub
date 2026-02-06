@@ -53,7 +53,7 @@ const testNotifications = async () => {
     // Create in-app notification
     console.log(`\nCreating in-app notification for user ${user.id}...`);
     try {
-      const frontendUrl = process.env.FRONTEND_URL || 'https://osf.mirall.ir';
+      const frontendUrl = process.env.FRONTEND_URL || 'https://onesub.ir';
       const notificationResult = await notificationService.createNotification(
         user.id,
         'wallet_charge',

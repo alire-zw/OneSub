@@ -13,7 +13,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'osa.mirall.ir',
+        hostname: 'api.onesub.ir',
         pathname: '/uploads/**',
       },
       {

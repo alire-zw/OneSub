@@ -152,7 +152,7 @@ const checkPendingPayments = async () => {
                     }
 
                     // ایجاد نوتیفیکیشن درون اپ
-                    const frontendUrl = process.env.FRONTEND_URL || 'https://osf.mirall.ir';
+                    const frontendUrl = process.env.FRONTEND_URL || 'https://onesub.ir';
                     await notificationService.createNotification(
                       order.userId,
                       'order',
@@ -279,7 +279,7 @@ const checkPendingPayments = async () => {
                       }
 
                       // ایجاد نوتیفیکیشن درون اپ
-                      const frontendUrl = process.env.FRONTEND_URL || 'https://osf.mirall.ir';
+                      const frontendUrl = process.env.FRONTEND_URL || 'https://onesub.ir';
                       await notificationService.createNotification(
                         payment.userId,
                         'order',
@@ -352,7 +352,7 @@ const checkPendingPayments = async () => {
                   
                   // Create in-app notification
                   try {
-                    const frontendUrl = process.env.FRONTEND_URL || 'https://osf.mirall.ir';
+                    const frontendUrl = process.env.FRONTEND_URL || 'https://onesub.ir';
                     await notificationService.createNotification(
                       payment.userId,
                       'wallet_charge',

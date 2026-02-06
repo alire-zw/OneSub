@@ -2,6 +2,7 @@ const TelegramBot = require('node-telegram-bot-api');
 const jalaali = require('jalaali-js');
 
 let bot = null;
+let handlersRegistered = false;
 
 // Initialize Telegram Bot
 const initBot = () => {
@@ -15,11 +16,53 @@ const initBot = () => {
   try {
     bot = new TelegramBot(token, { polling: false });
     console.log('[Telegram Bot] Bot initialized successfully');
+    if (!handlersRegistered) {
+      bot.onText(/\/start(?:\s+(.*))?/i, async (msg) => {
+        try {
+          console.log(`[Telegram Bot] /start received from chat ${msg.chat?.id}`);
+          const result = await sendStartMessage(msg.chat.id);
+          console.log(`[Telegram Bot] /start reply sent to ${msg.chat?.id}`, result);
+        } catch (e) {
+          console.error('[Telegram Bot] Error handling /start:', e?.message || e);
+        }
+      });
+      handlersRegistered = true;
+    }
     return bot;
   } catch (error) {
     console.error('[Telegram Bot] Error initializing bot:', error);
     return null;
   }
+};
+
+const setWebhook = async (webhookUrl) => {
+  if (!bot) {
+    initBot();
+  }
+  if (!bot) return { success: false, message: 'Bot not initialized' };
+  try {
+    try {
+      await bot.deleteWebHook();
+    } catch (_) {}
+    const options = {};
+    if (process.env.TELEGRAM_WEBHOOK_SECRET) {
+      options.secret_token = process.env.TELEGRAM_WEBHOOK_SECRET;
+    }
+    await bot.setWebHook(webhookUrl, options);
+    console.log(`[Telegram Bot] Webhook set: ${webhookUrl}`);
+    return { success: true };
+  } catch (error) {
+    console.error('[Telegram Bot] Error setting webhook:', error.message);
+    return { success: false, message: error.message };
+  }
+};
+
+const processUpdate = (update) => {
+  if (!bot) {
+    initBot();
+  }
+  if (!bot) return;
+  bot.processUpdate(update);
 };
 
 const sendSecondChannelOrderReport = async (userId, orderNumber) => {
@@ -199,7 +242,7 @@ const sendSecondChannelOrderReport = async (userId, orderNumber) => {
 
     const message = `🛒 <b>New Buy Report</b>\n\n${userInfo}`;
 
-    const frontendUrl = process.env.FRONTEND_URL || 'https://osf.mirall.ir';
+    const frontendUrl = process.env.FRONTEND_URL || 'https://onesub.ir';
     const keyboard = {
       inline_keyboard: [
         [
@@ -264,7 +307,7 @@ const sendWalletChargeNotification = async (telegramId, amount, shabaNumber = nu
 
 🛒 <b>همین حالا</b> میتوانید از طریق دکمه زیر به خرید خود ادامه دهید.`;
 
-    const frontendUrl = process.env.FRONTEND_URL || 'https://osf.mirall.ir';
+    const frontendUrl = process.env.FRONTEND_URL || 'https://onesub.ir';
     const miniAppUrl = `${frontendUrl}/shop`;
 
     // Create inline keyboard with web app button
@@ -322,7 +365,7 @@ const sendOrderConfirmationNotification = async (telegramId, orderNumber, produc
 
 📊 <b>همین حالا</b> میتوانید از طریق دکمه زیر سفارش خود را مشاهده کنید.`;
 
-    const frontendUrl = process.env.FRONTEND_URL || 'https://osf.mirall.ir';
+    const frontendUrl = process.env.FRONTEND_URL || 'https://onesub.ir';
     const dashboardUrl = `${frontendUrl}/dashboard`;
 
     // Create inline keyboard with web app button
@@ -402,7 +445,7 @@ const sendOrderDeliveryStatusNotification = async (telegramId, orderNumber, prod
         return { success: false, message: 'Invalid delivery status' };
     }
 
-    const frontendUrl = process.env.FRONTEND_URL || 'https://osf.mirall.ir';
+    const frontendUrl = process.env.FRONTEND_URL || 'https://onesub.ir';
     const orderDetailUrl = `${frontendUrl}/orders/${orderNumber}`;
 
     // Create inline keyboard with web app button
@@ -462,7 +505,7 @@ const sendOrderCompletionNotification = async (telegramId, orderNumber, productN
 
 📊 <b>همین حالا</b> میتوانید از طریق دکمه زیر سفارش خود را مشاهده کنید.`;
 
-    const frontendUrl = process.env.FRONTEND_URL || 'https://osf.mirall.ir';
+    const frontendUrl = process.env.FRONTEND_URL || 'https://onesub.ir';
     const dashboardUrl = `${frontendUrl}/dashboard`;
 
     // Create inline keyboard with web app button
@@ -633,7 +676,7 @@ const sendAdminOrderReport = async (userId, orderNumber, productName, amount, pa
     const message = `🛒 <b>New Order Pay</b>\n\n${userInfo}`;
     
     // Create inline keyboard with URL button to profile
-    const frontendUrl = process.env.FRONTEND_URL || 'https://osf.mirall.ir';
+    const frontendUrl = process.env.FRONTEND_URL || 'https://onesub.ir';
     const profileUrl = `${frontendUrl}/profile`;
     const keyboard = {
       inline_keyboard: [
@@ -808,7 +851,7 @@ const sendAdminChargeReport = async (userId, amount, chargeMethod, shabaNumber =
     const message = `💸 <b>New Add Balance</b>\n\n${userInfo}`;
     
     // Create inline keyboard with URL button to profile
-    const frontendUrl = process.env.FRONTEND_URL || 'https://osf.mirall.ir';
+    const frontendUrl = process.env.FRONTEND_URL || 'https://onesub.ir';
     const profileUrl = `${frontendUrl}/profile`;
     const keyboard = {
       inline_keyboard: [
@@ -840,19 +883,83 @@ const sendAdminChargeReport = async (userId, amount, chargeMethod, shabaNumber =
   }
 };
 
-// Initialize bot on module load
-if (process.env.TELEGRAM_BOT_TOKEN) {
-  initBot();
-}
+const sendStartMessage = async (telegramId) => {
+  if (!bot) {
+    bot = initBot();
+    if (!bot) {
+      return { success: false, message: 'Bot not initialized' };
+    }
+  }
+  try {
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.FRONTEND_URL || 'https://onesub.ir';
+    const message = `💚 به وان‌ساب خوش آمدید، وان‌ساب پلتفرمی برای ارائه و فروش اشتراک سرویس‌های دیجیتال بین‌المللی است.\n✔️ در این ربات می‌توانید از طریق مینی‌اپ وان‌ساب اشتراک خود را به‌صورت شفاف تهیه و مدیریت کنید.\n➕ برای ادامه، از دکمه‌های زیر وارد فروشگاه شوید.`;
+    const heartOffset = message.indexOf('💚');
+    const checkOffset = message.indexOf('✔️');
+    const plusOffset = message.indexOf('➕');
+    const entities = [];
+    if (heartOffset >= 0) {
+      entities.push({ type: 'custom_emoji', offset: heartOffset, length: '💚'.length, custom_emoji_id: '5776044831964929854' });
+    }
+    if (checkOffset >= 0) {
+      entities.push({ type: 'custom_emoji', offset: checkOffset, length: '✔️'.length, custom_emoji_id: '5206607081334906820' });
+    }
+    if (plusOffset >= 0) {
+      entities.push({ type: 'custom_emoji', offset: plusOffset, length: '➕'.length, custom_emoji_id: '5397916757333654639' });
+    }
+    const keyboard = {
+      inline_keyboard: [
+        [
+          { text: '🛒 ورود به فروشگاه و خرید', web_app: { url: `${siteUrl}/shop` } }
+        ],
+        [
+          { text: '📮 کانال ما', url: 'https://t.me/onesub_ir' },
+          { text: '📟 داشبورد', web_app: { url: `${siteUrl}/dashboard` } },
+          { text: '🙋🏻‍♂️ پروفایل', web_app: { url: `${siteUrl}/profile` } }
+        ]
+      ]
+    };
+    console.log(`[Telegram Bot] Sending start message to ${telegramId} with siteUrl=${siteUrl}`);
+    const result = await bot.sendMessage(telegramId, message, { reply_markup: keyboard, entities });
+    console.log(`[Telegram Bot] Start message sent. message_id=${result.message_id}`);
+    return { success: true, messageId: result.message_id };
+  } catch (error) {
+    console.error(`[Telegram Bot] Error sending start message to ${telegramId}:`, error.message);
+    try {
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.FRONTEND_URL || 'https://onesub.ir';
+      const fallbackMessage = `به وان‌ساب خوش آمدید. برای ادامه از دکمه‌های زیر استفاده کنید.`;
+      const keyboard = {
+        inline_keyboard: [
+          [ { text: '🛒 ورود به فروشگاه و خرید', web_app: { url: `${siteUrl}/shop` } } ],
+          [
+            { text: '� داشبورد', web_app: { url: `${siteUrl}/dashboard` } },
+            { text: '�🏻‍♂️ پروفایل', web_app: { url: `${siteUrl}/profile` } },
+            { text: '📮 کانال ما', url: 'https://t.me/onesub_ir' }
+          ]
+        ]
+      };
+      const res2 = await bot.sendMessage(telegramId, fallbackMessage, { reply_markup: keyboard });
+      console.log(`[Telegram Bot] Fallback start message sent. message_id=${res2.message_id}`);
+      return { success: true, messageId: res2.message_id };
+    } catch (err2) {
+      console.error(`[Telegram Bot] Fallback send failed for ${telegramId}:`, err2.message);
+      return { success: false, message: error.message };
+    }
+  }
+};
+
+// Initialize bot on module load (disabled, server initializes and sets webhook)
 
 module.exports = {
   initBot,
+  setWebhook,
+  processUpdate,
   sendWalletChargeNotification,
   sendOrderConfirmationNotification,
   sendOrderCompletionNotification,
   sendOrderDeliveryStatusNotification,
   sendAdminOrderReport,
   sendSecondChannelOrderReport,
-  sendAdminChargeReport
+  sendAdminChargeReport,
+  sendStartMessage
 };
 

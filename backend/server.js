@@ -92,9 +92,30 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/tickets', ticketRoutes);
 
-// Initialize Telegram Bot
+// Initialize Telegram Bot and webhook route
 const telegramBot = require('./services/telegramBot');
 telegramBot.initBot();
+
+const TELEGRAM_WEBHOOK_PATH = `/api/telegram/webhook`;
+const BACKEND_PUBLIC_URL = process.env.BACKEND_URL || process.env.BASE_URL;
+if (process.env.TELEGRAM_BOT_TOKEN && BACKEND_PUBLIC_URL) {
+  const webhookUrl = `${BACKEND_PUBLIC_URL}${TELEGRAM_WEBHOOK_PATH}`;
+  telegramBot.setWebhook(webhookUrl);
+}
+
+app.post(TELEGRAM_WEBHOOK_PATH, (req, res) => {
+  try {
+    console.log('[Telegram Webhook] Update:', JSON.stringify(req.body).slice(0, 800));
+    telegramBot.processUpdate(req.body);
+    res.status(200).send('OK');
+  } catch (err) {
+    res.sendStatus(500);
+  }
+});
+
+app.get(TELEGRAM_WEBHOOK_PATH, (req, res) => {
+  res.status(200).send('Webhook is active. Use POST method for Telegram updates.');
+});
 
 app.get('/health', async (req, res) => {
   try {

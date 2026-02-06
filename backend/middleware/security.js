@@ -9,7 +9,7 @@ const securityHeaders = helmet({
       styleSrc: ["'self'", "'unsafe-inline'"],
       scriptSrc: ["'self'", "https://telegram.org"],
       imgSrc: ["'self'", "data:", "https:", "https://t.me"],
-      fontSrc: ["'self'", "data:", "https://osf.mirall.ir"],
+      fontSrc: ["'self'", "data:", "https://onesub.ir"],
       connectSrc: ["'self'", "http://localhost:4536", "http://localhost:8903", "https://api.sms.ir"],
     },
   },

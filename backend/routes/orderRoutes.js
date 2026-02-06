@@ -1195,7 +1195,7 @@ router.put('/admin/:id/delivery-status', authenticate, requireAdmin, generalRate
         
         // ایجاد نوتیفیکیشن درون اپ
         try {
-          const FRONTEND_URL = process.env.FRONTEND_URL || 'https://osf.mirall.ir';
+          const FRONTEND_URL = process.env.FRONTEND_URL || 'https://onesub.ir';
           let notificationTitle = '';
           let notificationMessage = '';
           
