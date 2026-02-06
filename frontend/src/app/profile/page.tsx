@@ -400,7 +400,8 @@ export default function ProfilePage() {
       {/* Menu Box */}
       <div className={styles.menuBox}>
         <div className={styles.menuList}>
-          {/* پیگیری سفارش */}
+          {/* پیگیری سفارش - کامنت شده */}
+          {/*
           <div className={styles.menuItem} onClick={() => router.push("/orders/tracking")}>
             <div className={styles.menuItemStart}>
               <span className={styles.menuIcon}>
@@ -412,10 +413,10 @@ export default function ProfilePage() {
               <ArrowIcon />
             </div>
           </div>
+          */}
 
-          <div className={styles.menuDivider}></div>
-
-          {/* لیست سفارشات */}
+          {/* لیست سفارشات - کامنت شده */}
+          {/*
           <div className={styles.menuItem} onClick={() => router.push("/orders")}>
             <div className={styles.menuItemStart}>
               <span className={styles.menuIcon}>
@@ -427,8 +428,7 @@ export default function ProfilePage() {
               <ArrowIcon />
             </div>
           </div>
-
-          <div className={styles.menuDivider}></div>
+          */}
 
           {/* تاریخچه شارژ حساب */}
           <div className={styles.menuItem} onClick={() => router.push("/profile/charge-history")}>

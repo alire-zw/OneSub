@@ -3,6 +3,10 @@ const axios = require('axios');
 const SMS_API_URL = 'https://api.sms.ir/v1/send/verify';
 const SANDBOX_TEMPLATE_ID = 123456;
 
+// OTP template id (production template provided by user)
+// Default to the real operational template (736133) if env not set
+const OTP_TEMPLATE_ID = process.env.SMS_OTP_TEMPLATE_ID || 736133;
+
 // SMS Template IDs
 const WALLET_CHARGE_TEMPLATE_ID = process.env.SMS_WALLET_CHARGE_TEMPLATE_ID || null;
 const ORDER_CONFIRMATION_TEMPLATE_ID = process.env.SMS_ORDER_CONFIRMATION_TEMPLATE_ID || null;
@@ -21,7 +25,7 @@ const sendOTP = async (mobile, code) => {
       SMS_API_URL,
       {
         mobile: mobile,
-        templateId: SANDBOX_TEMPLATE_ID,
+        templateId: parseInt(OTP_TEMPLATE_ID),
         parameters: [
           {
             name: 'Code',

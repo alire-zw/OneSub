@@ -126,6 +126,64 @@ export default function ProductDetailPage() {
 
         if (data.status === 1 && data.data) {
           setProduct(data.data);
+          // Update page title with product name
+          if (typeof document !== 'undefined' && data.data.productName) {
+            document.title = `وان‌ساب | ${data.data.productName}`;
+            
+            // Update meta description
+            const description = data.data.additionalInfo || 
+              `خرید اشتراک ${data.data.productName} با بهترین قیمت در وان‌ساب`;
+            
+            // Update or create meta description tag
+            let metaDescription = document.querySelector('meta[name="description"]') as HTMLMetaElement;
+            if (metaDescription) {
+              metaDescription.content = description;
+            } else {
+              metaDescription = document.createElement('meta');
+              metaDescription.name = 'description';
+              metaDescription.content = description;
+              document.head.appendChild(metaDescription);
+            }
+            
+            // Update Open Graph description
+            let ogDescription = document.querySelector('meta[property="og:description"]') as HTMLMetaElement;
+            if (ogDescription) {
+              ogDescription.content = description;
+            } else {
+              ogDescription = document.createElement('meta');
+              ogDescription.setAttribute('property', 'og:description');
+              ogDescription.content = description;
+              document.head.appendChild(ogDescription);
+            }
+            
+            // Update Open Graph image with product image
+            if (data.data.imagePath) {
+              const productImageUrl = data.data.imagePath.startsWith('http') 
+                ? data.data.imagePath 
+                : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4536'}/${data.data.imagePath}`;
+              
+              let ogImage = document.querySelector('meta[property="og:image"]') as HTMLMetaElement;
+              if (ogImage) {
+                ogImage.content = productImageUrl;
+              } else {
+                ogImage = document.createElement('meta');
+                ogImage.setAttribute('property', 'og:image');
+                ogImage.content = productImageUrl;
+                document.head.appendChild(ogImage);
+              }
+              
+              // Update Twitter image
+              let twitterImage = document.querySelector('meta[name="twitter:image"]') as HTMLMetaElement;
+              if (twitterImage) {
+                twitterImage.content = productImageUrl;
+              } else {
+                twitterImage = document.createElement('meta');
+                twitterImage.name = 'twitter:image';
+                twitterImage.content = productImageUrl;
+                document.head.appendChild(twitterImage);
+              }
+            }
+          }
         } else {
           setError(data.message || "محصول یافت نشد");
         }

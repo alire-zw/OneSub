@@ -533,11 +533,11 @@ const createOrdersTable = async () => {
     
     // Add walletAddress column if it doesn't exist (for existing tables)
     try {
-      const [columns] = await mysqlDb.query(`
+      const columns = await mysqlDb.query(`
         SHOW COLUMNS FROM orders LIKE 'walletAddress'
       `);
       
-      if (columns.length === 0) {
+      if (!columns || columns.length === 0) {
         await mysqlDb.query(`
           ALTER TABLE orders 
           ADD COLUMN walletAddress VARCHAR(255) COMMENT 'آدرس کیف پول برای پرداخت ارز دیجیتال'

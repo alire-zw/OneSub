@@ -164,7 +164,19 @@ router.post('/purchase-with-wallet', authenticate, generalRateLimiter, async (re
         console.error('[Order Routes] Error creating notification:', notificationError);
       }
 
-      // گزارش ادمین برای خرید با کیف پول ارسال نمی‌شود
+      // گزارش ادمین برای خرید با کیف پول
+      try {
+        await telegramBot.sendAdminOrderReport(
+          userId,
+          orderNumber,
+          product.productName,
+          price,
+          'Wallet',
+          null
+        );
+      } catch (adminReportError) {
+        console.error('[Order Routes] Error sending admin order report:', adminReportError);
+      }
     } catch (error) {
       console.error('[Order Routes] Error sending order notifications:', error);
     }
@@ -264,21 +276,6 @@ router.post('/purchase-direct', authenticate, generalRateLimiter, async (req, re
       await refreshUserCache(userId);
     }
 
-    // ایجاد سفارش با وضعیت pending
-    const insertOrderQuery = `
-      INSERT INTO orders (userId, orderNumber, productId, paymentMethod, orderEmail, amount, paidAmount, status)
-      VALUES (?, ?, ?, 'online', ?, ?, ?, 'pending')
-    `;
-    
-    const orderResult = await mysql.query(insertOrderQuery, [
-      userId,
-      orderNumber,
-      productId,
-      orderEmail || null,
-      price,
-      paidFromWallet
-    ]);
-
     // ایجاد درخواست پرداخت درگاه
     const orderId = `ORD-${orderNumber}`;
     const callbackUrl = `${BASE_URL}/api/orders/callback`;
@@ -295,8 +292,17 @@ router.post('/purchase-direct', authenticate, generalRateLimiter, async (req, re
     const paymentResult = await zibalService.requestPayment(paymentOptions);
 
     if (!paymentResult.success) {
-      // در صورت خطا، سفارش را cancelled می‌کنیم
-      await mysql.query('UPDATE orders SET status = ? WHERE id = ?', ['cancelled', orderResult.insertId]);
+      // اگر از موجودی استفاده شده بود، برگردانیم
+      if (paidFromWallet > 0) {
+        const priceInRial = paidFromWallet * 10;
+        const restoreWalletQuery = `
+          UPDATE users 
+          SET walletBalance = walletBalance + ? 
+          WHERE id = ?
+        `;
+        await mysql.query(restoreWalletQuery, [priceInRial, userId]);
+        await refreshUserCache(userId);
+      }
       
       return res.status(400).json({
         status: 0,
@@ -321,9 +327,22 @@ router.post('/purchase-direct', authenticate, generalRateLimiter, async (req, re
 
     // به‌روزرسانی سفارش با transactionId
     const transactionResult = await mysql.query('SELECT id FROM transactions WHERE trackId = ?', [paymentResult.trackId]);
-    if (transactionResult && transactionResult.length > 0) {
-      await mysql.query('UPDATE orders SET transactionId = ? WHERE id = ?', [transactionResult[0].id, orderResult.insertId]);
-    }
+    
+    // ایجاد سفارش با وضعیت pending (فقط پس از موفقیت در درخواست پرداخت)
+    const insertOrderQuery = `
+      INSERT INTO orders (userId, orderNumber, productId, paymentMethod, orderEmail, amount, paidAmount, status, transactionId)
+      VALUES (?, ?, ?, 'online', ?, ?, ?, 'pending', ?)
+    `;
+    
+    const orderResult = await mysql.query(insertOrderQuery, [
+      userId,
+      orderNumber,
+      productId,
+      orderEmail || null,
+      price,
+      paidFromWallet,
+      transactionResult && transactionResult.length > 0 ? transactionResult[0].id : null
+    ]);
 
     const paymentUrl = zibalService.getPaymentUrl(paymentResult.trackId);
 
@@ -752,8 +771,8 @@ router.get('/:orderNumber', authenticate, generalRateLimiter, async (req, res) =
       FROM orders o
       LEFT JOIN products p ON o.productId = p.id
       LEFT JOIN transactions t ON o.transactionId = t.id
-      WHERE o.orderNumber = ? AND o.userId = ?`,
-      [orderNumber, userId]
+      WHERE (o.orderNumber = ? OR o.id = ?) AND o.userId = ?`,
+      [orderNumber, orderNumber, userId]
     );
 
     if (!orders || orders.length === 0) {

@@ -1,0 +1,31 @@
+{
+  "csrfToken": "79b99b3a-307b-483b-ad49-c54ef50c2f80",
+  "userInfo": {
+    "id": "3671457",
+    "cif": "5024276",
+    "name": "تبادل يار سامان ",
+    "mobile": "9899*******05",
+    "email": null,
+    "hasVirtualUsers": false,
+    "availableUsersForSwitch": null,
+    "mediaAddress": null,
+    "mediaType": null,
+    "userIsNew": false,
+    "currentUserType": "OWNER"
+  },
+  "authExpiration": {
+    "sessionExpirationDate": 1770353210000,
+    "timeToIdle": 300
+  },
+  "passwordExpiration": {
+    "expired": false,
+    "enterDate": 1758585600000,
+    "countDayForExpire": "999",
+    "countDayForAlertExpire": "20"
+  },
+  "lastClientAddress": "193.151.140.3",
+  "twoPhaseLoginWithTicketRequired": false,
+  "gender": "LEGAL",
+  "lastActivity": "2026-02-06T04:32:01.142Z",
+  "savedAt": "2026-02-06T04:32:01.142Z"
+}

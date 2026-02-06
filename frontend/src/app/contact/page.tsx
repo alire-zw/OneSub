@@ -3,11 +3,11 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
-import { API_BASE_URL, API_ENDPOINTS, getAuthHeaders } from "@/config/api";
 import styles from "./page.module.css";
 import ContactIcon from "@/components/icons/ContactIcon";
 import Notification from "@/components/Notification";
 import CenterModal from "@/components/CenterModal";
+import { API_ENDPOINTS, getAuthHeaders } from "@/config/api";
 
 interface Ticket {
   id: number;
@@ -40,7 +40,8 @@ export default function ContactPage() {
   }>>([]);
   const [chatInput, setChatInput] = useState("");
 
-  // بارگذاری تیکت‌ها (فقط اگر کاربر لاگین باشد)
+  // بارگذاری تیکت‌ها (فقط اگر کاربر لاگین باشد) - کامنت شده
+  /*
   useEffect(() => {
     const fetchTickets = async () => {
       if (authLoading) return;
@@ -74,6 +75,7 @@ export default function ContactPage() {
 
     fetchTickets();
   }, [authLoading, isAuthenticated]);
+  */
 
   const showNotification = (message: string, type: "success" | "error" | "warning" | "info" = "success") => {
     setNotification({ show: true, message, type });
@@ -159,20 +161,10 @@ export default function ContactPage() {
     }).format(date);
   };
 
-  if (authLoading || (isAuthenticated && isLoading)) {
+  if (authLoading) {
     return (
       <div className={styles.container}>
         <div className={styles.content}>
-          {isAuthenticated && (
-            <div className={styles.section}>
-              <h3 className={styles.sectionTitle}>تیکت‌های پشتیبانی</h3>
-              <div className={styles.ticketsBox}>
-                <div className={styles.emptyState}>
-                  <p className={styles.emptyText}>در حال بارگذاری...</p>
-                </div>
-              </div>
-            </div>
-          )}
           <div className={styles.section}>
             <h3 className={styles.sectionTitle}>چت آنلاین با پشتیبانی</h3>
             <div className={styles.ticketsBox}>
@@ -189,7 +181,8 @@ export default function ContactPage() {
   return (
     <div className={styles.container}>
       <div className={styles.content}>
-        {/* بخش تیکت‌ها - فقط برای کاربران لاگین شده */}
+        {/* بخش تیکت‌ها - کامنت شده */}
+        {/*
         {isAuthenticated && (
           <div className={styles.section}>
           <h3 className={styles.sectionTitle}>تیکت‌های پشتیبانی</h3>
@@ -270,20 +263,23 @@ export default function ContactPage() {
           </div>
           </div>
         )}
+        */}
 
         {/* بخش چت آنلاین */}
         <div className={styles.section}>
           <h3 className={styles.sectionTitle}>چت آنلاین با پشتیبانی</h3>
           <div className={styles.actionButtons}>
-            <button
+            <a
+              href={process.env.NEXT_PUBLIC_TELEGRAM_SUPPORT_LINK || "https://t.me/your_support_username"}
+              target="_blank"
+              rel="noopener noreferrer"
               className={styles.actionButton}
-              onClick={() => setIsChatOpen(true)}
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
               </svg>
-              شروع چت آنلاین
-            </button>
+              چت با پشتیبانی در تلگرام
+            </a>
           </div>
           <div className={styles.chatInfoBox}>
             <div className={styles.chatInfoContent}>
@@ -293,9 +289,9 @@ export default function ContactPage() {
                 </svg>
               </div>
               <div className={styles.chatInfoText}>
-                <h4 className={styles.chatInfoTitle}>پشتیبانی آنلاین</h4>
+                <h4 className={styles.chatInfoTitle}>پشتیبانی تلگرام</h4>
                 <p className={styles.chatInfoDescription}>
-                  برای دریافت پاسخ سریع‌تر، می‌توانید از چت آنلاین استفاده کنید. تیم پشتیبانی ما در ساعات کاری آماده پاسخگویی است.
+                  برای دریافت پاسخ سریع‌تر، می‌توانید از طریق تلگرام با تیم پشتیبانی ما در ارتباط باشید. تیم پشتیبانی ما در ساعات کاری آماده پاسخگویی است.
                 </p>
               </div>
             </div>
@@ -303,7 +299,8 @@ export default function ContactPage() {
         </div>
       </div>
 
-      {/* Modal چت آنلاین */}
+      {/* Modal چت آنلاین - کامنت شده */}
+      {/*
       <CenterModal
         isOpen={isChatOpen}
         onClose={() => {
@@ -370,6 +367,7 @@ export default function ContactPage() {
           </div>
         </div>
       </CenterModal>
+      */}
 
       <Notification
         show={notification.show}

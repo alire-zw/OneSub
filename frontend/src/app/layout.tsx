@@ -8,16 +8,9 @@ import CookieCleaner from "@/components/CookieCleaner";
 import NotificationReader from "@/components/NotificationReader";
 import ErrorSuppressor from "@/components/ErrorSuppressor";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { generatePageMetadata } from "@/utils/metadata";
 
-export const metadata: Metadata = {
-  title: "OneSub - سیستم مدیریت اشتراک",
-  description: "سیستم مدیریت اشتراک OneSub",
-  icons: {
-    icon: "/logo.webp",
-    shortcut: "/logo.webp",
-    apple: "/logo.webp",
-  },
-};
+export const metadata: Metadata = generatePageMetadata();
 
 export const viewport = {
   width: "device-width",
